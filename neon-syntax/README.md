@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎮 Neon Syntax
 
-## Getting Started
+**Neon Syntax** is a production-grade, browser-based programmable strategy game. Players write scripts in real-time to control units, manage resources, and outmaneuver opponents in a reactive, high-performance environment.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Tech Stack
+
+The project is built with a modern, high-performance stack designed for low-latency game logic and premium UI interactions:
+
+*   **Runtime & Package Manager**: [Bun](https://bun.sh/) — for lightning-fast installs and optimized script execution.
+*   **Framework**: [Next.js 16 (App Router)](https://nextjs.org/) — leveraging the latest React features and server-side optimizations.
+*   **Language**: [TypeScript](https://www.typescriptlang.org/) — providing end-to-end type safety for game engine logic and UI components.
+*   **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) — modern, utility-first styling with high performance.
+*   **State Management**: [Zustand](https://zustand-demo.pmnd.rs/) — lightweight and performant state for both game engine and UI.
+*   **Animations**: [Framer Motion](https://www.framer.com/motion/) — for smooth transitions, micro-interactions, and game effects.
+*   **Code Editor**: [Monaco Editor](https://microsoft.github.io/monaco-editor/) (via `@monaco-editor/react`) — giving players a professional-grade IDE experience in-game.
+
+---
+
+## 📂 Folder Structure
+
+The project follows a modular architecture that separates game engine logic from UI presentation:
+
+```text
+neon-syntax/
+├── src/
+│   ├── app/            # Next.js App Router (Routes & Layouts)
+│   ├── components/     # Reusable UI component library
+│   ├── config/         # Game constants and environment configuration
+│   ├── engine/         # 🧠 Core Game Logic
+│   │   ├── core/       # Game loop, state machine, and world logic
+│   │   ├── systems/    # Modular systems (Combat, Movement, Resources)
+│   │   └── validation/ # Intent & input validation
+│   ├── hooks/          # Custom React hooks
+│   ├── lib/            # Utility functions and library wrappers
+│   ├── store/          # Zustand store definitions (Global State)
+│   ├── styles/         # Global styles and Tailwind configuration
+│   ├── types/          # Centralized TypeScript definitions
+│   └── workers/        # 🛡️ Web Workers (Sandboxed User Script Execution)
+├── public/             # Static assets (Images, Models, Audio)
+├── package.json        # Dependencies and scripts
+└── tsconfig.json       # TypeScript configuration
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Key Libraries
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Library | Purpose |
+| :--- | :--- |
+| `zustand` | High-frequency game state synchronization. |
+| `framer-motion` | Dynamic UI feedback and game animations. |
+| `@monaco-editor/react` | The interface for player "Syntax" (coding). |
+| `clsx` & `tailwind-merge` | Efficient Tailwind class management. |
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🏃 Getting Started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1.  **Install Dependencies**:
+    ```bash
+    bun install
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2.  **Start Development Server**:
+    ```bash
+    bun dev
+    ```
 
-## Deploy on Vercel
+3.  **Build for Production**:
+    ```bash
+    bun run build
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🧩 Architectural Principles
+
+*   **Headless Engine**: The game engine (`src/engine`) is decoupled from React, allowing for deterministic simulations.
+*   **Sandboxed Execution**: Player code runs in isolated Web Workers (`src/workers`) to ensure security and prevent main-thread blocking.
+*   **Reactive UI**: The UI reacts to state changes via Zustand stores, ensuring the interface stays in sync with the engine at all times.
