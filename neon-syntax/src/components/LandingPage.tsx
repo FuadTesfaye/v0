@@ -2,19 +2,20 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { RobotPixelGrid } from './ui/pixel-grid';
-import { useGameStore } from '@/store/gameStore';
+import { useRouter } from 'next/navigation';
+import Faq2 from '@/components/mvpblocks/faq-2';
 
 export default function LandingPage() {
-    const { setStage } = useGameStore();
+    const router = useRouter();
 
     const handleStart = () => {
-        setStage('BOOT');
+        router.push('/algowars');
     };
 
     return (
-        <div className="relative w-full h-screen overflow-hidden bg-black font-mono">
-            {/* Background Grid Simulation */}
-            <div className="absolute inset-0 z-0 opacity-60">
+        <div className="relative w-full min-h-screen overflow-x-hidden bg-black font-mono">
+            {/* Background Grid Simulation - Custom Fixed Position */}
+            <div className="fixed inset-0 z-0 opacity-60">
                 <RobotPixelGrid
                     gridCols={40}
                     gridRows={25}
@@ -24,8 +25,8 @@ export default function LandingPage() {
                 />
             </div>
 
-            {/* Content Overlay */}
-            <div className="relative z-10 flex flex-col items-center justify-center h-full w-full pointer-events-none">
+            {/* Hero Section */}
+            <div className="relative z-10 flex flex-col items-center justify-center min-h-screen w-full pointer-events-none">
 
                 {/* Title Block */}
                 <motion.div
@@ -69,17 +70,30 @@ export default function LandingPage() {
                     </button>
                 </motion.div>
 
-                {/* Footer / Status */}
+                {/* Scroll Indicator */}
                 <motion.div
                     initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 1, duration: 1 }}
-                    className="absolute bottom-8 left-0 right-0 text-center"
+                    animate={{ opacity: 1, y: [0, 10, 0] }}
+                    transition={{ delay: 1, duration: 2, repeat: Infinity }}
+                    className="absolute bottom-12 left-0 right-0 text-center pointer-events-auto"
                 >
-                    <p className="text-xs text-white/20">
-                        SYSTEM STATUS: <span className="text-green-500 animate-pulse">ONLINE</span>
-                    </p>
+                    <p className="text-[10px] text-cyan-500/50 mb-2 tracking-widest">SCROLL FOR INFO</p>
+                    <svg className="w-6 h-6 text-cyan-500/50 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
                 </motion.div>
+            </div>
+
+            {/* FAQ Section */}
+            <div className="relative z-10 bg-gradient-to-b from-transparent via-black/80 to-black">
+                <Faq2 />
+            </div>
+
+            {/* Footer */}
+            <div className="relative z-10 py-8 text-center border-t border-white/5 bg-black">
+                <p className="text-xs text-white/20">
+                    SYSTEM STATUS: <span className="text-green-500 animate-pulse">ONLINE</span> • V0.1.0
+                </p>
             </div>
         </div>
     );
