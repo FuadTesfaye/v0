@@ -1,11 +1,10 @@
 'use client';
-import { useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useGameStore } from '@/store/gameStore';
 import BootSequence from '@/components/BootSequence';
 import MainMenu from '@/components/MainMenu';
-import GameplayScreen from '@/components/GameplayScreen';
 import ResultsScreen from '@/components/ResultsScreen';
+import Dashboard from '@/components/Dashboard';
 
 export default function Home() {
   const { stage } = useGameStore();
@@ -38,8 +37,8 @@ export default function Home() {
           <MainMenu key="menu" />
         )}
 
-        {stage === 'PLAYING' && (
-          <GameplayScreen key="playing" />
+        {(stage === 'PLAYING' || stage === 'PAUSED') && (
+          <Dashboard key="dashboard" />
         )}
 
         {stage === 'RESULTS' && (

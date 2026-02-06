@@ -1,38 +1,54 @@
-'use client';
-import { useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '@/store/gameStore';
-
-const INITIAL_CODE = `// Move to scan the area
-api.move('EAST');
-api.move('EAST');
-api.move('EAST');
-api.move('SOUTH');
-api.scan();`;
+import { useScriptSandbox } from '@/hooks/useScriptSandbox';
 
 export default function ScriptEditor() {
-    const [code, setCode] = useState(INITIAL_CODE);
-    const { scriptRunning, setScriptRunning, addLog } = useGameStore();
-    const editorRef = useRef(null);
+    const {
+        grid,
+        activeUnitId,
+        updateUnitScript,
+        resolveTurn,
+        scriptRunning,
+        setScriptRunning,
+        addLog
+    } = useGameStore();
+
+    const activeUnit = grid.units.find(u => u.id === activeUnitId);
+    const [code, setCode] = useState(activeUnit?.currentScript || '');
+    const editorRef = useRef<any>(null);
+    const { executeScript } = useScriptSandbox();
+
+    useEffect(() => {
+        if (activeUnit) {
+            setCode(activeUnit.currentScript);
+        }
+    }, [activeUnitId]);
 
     const handleRunCode = async () => {
-        if (scriptRunning) return;
+        if (scriptRunning || !activeUnitId) return;
 
         setScriptRunning(true);
-        addLog('Initiating script execution...', 'info');
+        addLog(`Executing script for [${activeUnitId}]...`, 'command');
 
         try {
-            // In a real app, we'd use a sandboxed worker or transformer.
-            // For Phase 1, we'll implement the executor in lib/scriptExecutor.ts
-            // and call it here. For now, we'll just log and set the state.
-            const { executeScript } = await import('@/lib/scriptExecutor');
-            await executeScript(code);
+            // 1. Get actions from sandbox
+            const actions = executeScript(code);
+
+            // 2. Update the script in store
+            updateUnitScript(activeUnitId, code);
+
+            // 3. Resolve turn with these actions
+            // In Phase 2, we just resolve for the active unit. 
+            // In Phase 5, we'll resolve for all units.
+            resolveTurn([{ unitId: activeUnitId, actions }]);
+
+            addLog('Turn resolved successfully.', 'success');
         } catch (err: any) {
-            addLog(`Runtime Error: ${err.message}`, 'error');
+            addLog(`Syntax/Runtime Error: ${err.message}`, 'error');
         } finally {
             setScriptRunning(false);
-            addLog('Script execution completed.', 'info');
         }
     };
 
@@ -41,12 +57,12 @@ export default function ScriptEditor() {
             <div className="flex justify-between items-center p-3 border-b border-cyan-500/20 bg-cyan-500/5">
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                    <span className="text-xs font-mono text-cyan-400 uppercase tracking-widest font-bold">Script Editor</span>
+                    <span className="text-xs font-mono text-cyan-400 uppercase tracking-widest font-bold">
+                        {activeUnit ? `Script Editor // ${activeUnit.id}` : 'No Unit Selected'}
+                    </span>
                 </div>
-                <div className="flex gap-2">
-                    <div className="px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-[10px] text-cyan-400 font-mono">
-                        JS v1.0
-                    </div>
+                <div className="flex gap-2 text-[10px] font-mono text-cyan-500/40">
+                    {activeUnit?.type} // {activeUnit?.health}HP
                 </div>
             </div>
 
@@ -66,7 +82,6 @@ export default function ScriptEditor() {
                         lineNumbers: 'on',
                         scrollBeyondLastLine: false,
                         automaticLayout: true,
-                        backgroundColor: '#00000000',
                         fontFamily: '"JetBrains Mono", monospace',
                         padding: { top: 16 }
                     }}
@@ -76,13 +91,13 @@ export default function ScriptEditor() {
             <div className="p-4 border-t border-cyan-500/20 bg-black/20">
                 <motion.button
                     onClick={handleRunCode}
-                    disabled={scriptRunning}
-                    className={`w-full py-3 rounded-lg font-bold tracking-[0.2em] uppercase transition-all duration-300 flex items-center justify-center gap-3 relative overflow-hidden ${scriptRunning
-                            ? 'bg-cyan-500/10 text-cyan-500/50 cursor-not-allowed'
-                            : 'bg-gradient-to-r from-cyan-600 to-cyan-400 text-black hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] active:scale-[0.98]'
+                    disabled={scriptRunning || !activeUnitId}
+                    className={`w-full py-3 rounded-lg font-bold tracking-[0.2em] uppercase transition-all duration-300 flex items-center justify-center gap-3 relative overflow-hidden ${scriptRunning || !activeUnitId
+                        ? 'bg-cyan-500/10 text-cyan-500/50 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-cyan-600 to-cyan-400 text-black hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] active:scale-[0.98]'
                         }`}
-                    whileHover={{ scale: scriptRunning ? 1 : 1.02 }}
-                    whileTap={{ scale: scriptRunning ? 1 : 0.98 }}
+                    whileHover={{ scale: (scriptRunning || !activeUnitId) ? 1 : 1.02 }}
+                    whileTap={{ scale: (scriptRunning || !activeUnitId) ? 1 : 0.98 }}
                 >
                     {scriptRunning ? (
                         <>

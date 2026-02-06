@@ -1,31 +1,11 @@
 import { create } from 'zustand';
 import type { GameState, GameStage, Difficulty, Snippet } from '@/types/game';
+import { generateGrid, revealArea } from '@/lib/gridGenerator';
+import { GridState, Unit, Tile } from '@/types/grid';
+import { ActionRequest } from '@/hooks/useScriptSandbox';
 
 const SNIPPETS: Snippet[] = [
-    {
-        id: 's1',
-        code: 'const x =  12;', // Double space error
-        solution: 'const x = 12;',
-        language: 'javascript',
-        category: 'syntax',
-        errorIndices: [10]
-    },
-    {
-        id: 's2',
-        code: 'function test() { retun true; }', // Typo in return
-        solution: 'function test() { return true; }',
-        language: 'javascript',
-        category: 'syntax',
-        errorIndices: [22]
-    },
-    {
-        id: 's3',
-        code: 'if (x ==  10) { }', // Double space
-        solution: 'if (x == 10) { }',
-        language: 'javascript',
-        category: 'syntax',
-        errorIndices: [9]
-    }
+    // ... existing snippets
 ];
 
 interface GameActions {
@@ -36,16 +16,21 @@ interface GameActions {
     resumeGame: () => void;
     endGame: (victory?: boolean) => void;
 
-    // Gameplay
-    submitFix: (isCorrect: boolean) => void;
+    // Grid Actions
+    updateUnitScript: (unitId: string, script: string) => void;
+    resolveTurn: (playerActions: Array<{ unitId: string, actions: ActionRequest[] }>) => void;
+    selectUnit: (unitId: string | null) => void;
+    addLog: (message: string, type?: 'info' | 'error' | 'success' | 'command') => void;
+    setScriptRunning: (running: boolean) => void;
     updateTimer: (delta: number) => void;
-    nextSnippet: () => void;
 
     // Settings
     toggleAudio: () => void;
 }
 
 type Store = GameState & GameActions;
+
+const initialGrid = generateGrid();
 
 export const useGameStore = create<Store>((set, get) => ({
     stage: 'BOOT',
@@ -58,8 +43,20 @@ export const useGameStore = create<Store>((set, get) => ({
     accuracy: 0,
     totalAttempts: 0,
     correctAttempts: 0,
+    grid: initialGrid,
+    activeUnitId: initialGrid.units[0].id,
+    scriptRunning: false,
+    logs: [
+        { message: 'NEURAL_LINK_ESTABLISHED', type: 'info', timestamp: Date.now() },
+        { message: 'GRID_INITIALIZED_SECTOR_7', type: 'command', timestamp: Date.now() + 100 }
+    ],
     currentSnippet: null,
     cursorIndex: 0,
+    currentDialogue: {
+        id: 'welcome',
+        speaker: 'A.V.A',
+        message: 'Neural link established. Sector 7 grid is live. Your scout is ready for code injection.'
+    },
     audioEnabled: true,
     visualIntensity: 0.5,
     lastRunSuccess: false,
@@ -76,6 +73,7 @@ export const useGameStore = create<Store>((set, get) => ({
 
     startGame: () => {
         const { maxTimer } = get();
+        const grid = generateGrid();
         set({
             stage: 'PLAYING',
             score: 0,
@@ -85,9 +83,11 @@ export const useGameStore = create<Store>((set, get) => ({
             totalAttempts: 0,
             correctAttempts: 0,
             accuracy: 0,
-            survivalTime: 0
+            survivalTime: 0,
+            grid: grid,
+            activeUnitId: grid.units[0].id,
+            logs: [{ message: 'OPERATION_NEON_SYNTAX_STARTED', type: 'info', timestamp: Date.now() }]
         });
-        get().nextSnippet();
     },
 
     pauseGame: () => set({ stage: 'PAUSED' }),
@@ -97,40 +97,74 @@ export const useGameStore = create<Store>((set, get) => ({
         set({ stage: 'RESULTS', lastRunSuccess: victory });
     },
 
-    nextSnippet: () => {
-        const randomIndex = Math.floor(Math.random() * SNIPPETS.length);
-        set({ currentSnippet: SNIPPETS[randomIndex] });
+    updateUnitScript: (unitId, script) => {
+        set(state => ({
+            grid: {
+                ...state.grid,
+                units: state.grid.units.map(u =>
+                    u.id === unitId ? { ...u, currentScript: script } : u
+                )
+            }
+        }));
     },
 
-    submitFix: (isCorrect) => {
-        const state = get();
-        const newTotal = state.totalAttempts + 1;
-        const newCorrect = isCorrect ? state.correctAttempts + 1 : state.correctAttempts;
-        const newCombo = isCorrect ? state.combo + 1 : 0;
-        const newMaxCombo = Math.max(state.maxCombo, newCombo);
+    selectUnit: (unitId) => set({ activeUnitId: unitId }),
 
-        // Time bonus/penalty
-        const timeDelta = isCorrect ? 3000 : -5000;
-        const newTimer = Math.max(0, Math.min(state.maxTimer, state.timer + timeDelta));
+    resolveTurn: (playerActionGroups) => {
+        const { grid } = get();
+        get().addLog('RESOLVING_TURN...', 'command');
 
-        set({
-            totalAttempts: newTotal,
-            correctAttempts: newCorrect,
-            accuracy: (newCorrect / newTotal) * 100,
-            combo: newCombo,
-            maxCombo: newMaxCombo,
-            score: Math.round(state.score + (isCorrect ? (100 * (1 + newCombo * 0.1)) : 0)),
-            timer: newTimer
+        set(state => {
+            const newUnits = [...state.grid.units];
+            const newTiles = [...state.grid.tiles];
+
+            // 1. Process Movements
+            playerActionGroups.forEach(group => {
+                const unitIndex = newUnits.findIndex(u => u.id === group.unitId);
+                if (unitIndex === -1) return;
+
+                const unit = newUnits[unitIndex];
+                group.actions.forEach(action => {
+                    if (action.type === 'MOVE') {
+                        const dir = action.payload;
+                        let nx = unit.position.x;
+                        let ny = unit.position.y;
+
+                        if (dir === 'NORTH') ny--;
+                        else if (dir === 'SOUTH') ny++;
+                        else if (dir === 'EAST') nx++;
+                        else if (dir === 'WEST') nx--;
+
+                        // Bounds check
+                        if (nx >= 0 && nx < state.grid.width && ny >= 0 && ny < state.grid.height) {
+                            newUnits[unitIndex] = { ...unit, position: { x: nx, y: ny } };
+                            // Reveal
+                            revealArea(newTiles, { x: nx, y: ny }, 2);
+                        }
+                    }
+                });
+            });
+
+            return {
+                grid: {
+                    ...state.grid,
+                    units: newUnits,
+                    tiles: newTiles,
+                    turn: state.grid.turn + 1
+                }
+            };
         });
-
-        if (newTimer <= 0) {
-            get().endGame(false);
-        } else {
-            get().nextSnippet();
-        }
     },
 
-    updateTimer: (delta) => {
+    addLog: (message, type = 'info') => {
+        set(state => ({
+            logs: [{ message, type, timestamp: Date.now() }, ...state.logs].slice(0, 50)
+        }));
+    },
+
+    setScriptRunning: (running) => set({ scriptRunning: running }),
+
+    updateTimer: (delta: number) => {
         const { timer, stage } = get();
         if (stage !== 'PLAYING') return;
 

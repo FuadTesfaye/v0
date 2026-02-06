@@ -1,11 +1,21 @@
-'use client';
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import GridCanvas from './GridCanvas';
 import ScriptEditor from './ScriptEditor';
 import DialoguePanel from './DialoguePanel';
 import ConsolePanel from './ConsolePanel';
+import { useGameStore } from '@/store/gameStore';
 
 export default function Dashboard() {
+    const { updateTimer } = useGameStore();
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            updateTimer(100);
+        }, 100);
+        return () => clearInterval(interval);
+    }, [updateTimer]);
+
     return (
         <div className="w-full h-screen flex flex-col gap-4 p-4 lg:p-6 overflow-hidden">
             {/* Top Header Section */}

@@ -1,3 +1,5 @@
+import { GridState } from './grid';
+
 export type GameStage = 'BOOT' | 'MENU' | 'DIFFICULTY' | 'PLAYING' | 'PAUSED' | 'RESULTS';
 export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 
@@ -24,9 +26,16 @@ export interface GameState {
     totalAttempts: number;
     correctAttempts: number;
 
+    // Grid State (New tactical engine)
+    grid: GridState;
+    activeUnitId: string | null;
+    scriptRunning: boolean;
+    logs: Array<{ message: string; type: 'info' | 'error' | 'success' | 'command'; timestamp: number }>;
+
     // Active Snippet
     currentSnippet: Snippet | null;
     cursorIndex: number; // For non-free typing interaction
+    currentDialogue: { id: string, speaker: string, message: string } | null;
 
     // Settings
     audioEnabled: boolean;
