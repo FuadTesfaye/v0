@@ -32,7 +32,7 @@ export default function DialoguePanel() {
                         >
                             <div className="text-cyan-400 font-mono text-xs mb-2 tracking-widest uppercase flex items-center gap-2">
                                 <span className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" />
-                                {currentDialogue.speaker} // Uplink Active
+                                {currentDialogue.speaker} {/* // Uplink Active */}
                             </div>
                             <p className="text-cyan-50/90 text-lg font-light leading-relaxed">
                                 {currentDialogue.message}

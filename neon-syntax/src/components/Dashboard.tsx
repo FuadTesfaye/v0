@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { motion } from 'framer-motion';
 import GridCanvas from './GridCanvas';
 import ScriptEditor from './ScriptEditor';
 import DialoguePanel from './DialoguePanel';
@@ -46,15 +45,15 @@ export default function Dashboard() {
                 </div>
 
                 {/* Right Side: Game Canvas and Info */}
-                <div className="col-span-12 lg:col-span-8 flex flex-col gap-6 h-full">
-                    <div className="flex-1 min-h-0 flex items-center justify-center bg-black/40 backdrop-blur-md border border-cyan-500/30 rounded-xl relative group">
+                <div className="col-span-12 lg:col-span-8 flex flex-col gap-6 h-full min-h-0">
+                    <div className="flex-1 min-h-0 relative group">
                         {/* Grid Canvas */}
-                        <div className="p-4 w-full h-full flex items-center justify-center">
-                            <GridCanvas size={600} />
+                        <div className="w-full h-full">
+                            <GridCanvas />
                         </div>
 
                         {/* Overlay Details */}
-                        <div className="absolute top-4 left-4 flex gap-4">
+                        <div className="absolute top-4 left-4 pointer-events-none flex gap-4">
                             <div className="px-3 py-1 bg-black/60 border border-cyan-500/30 rounded-md text-[10px] font-mono text-cyan-400">
                                 LVL 01: DIVE_INTO_NEON
                             </div>

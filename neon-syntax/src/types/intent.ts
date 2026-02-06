@@ -1,1 +1,1 @@
-export type Intent = {};
+export type Intent = Record<string, never>;

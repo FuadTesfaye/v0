@@ -33,7 +33,7 @@ type Store = GameState & GameActions;
 const initialGrid = generateGrid();
 
 export const useGameStore = create<Store>((set, get) => ({
-    stage: 'BOOT',
+    stage: 'LANDING',
     difficulty: 'EASY',
     score: 0,
     combo: 0,
@@ -47,8 +47,8 @@ export const useGameStore = create<Store>((set, get) => ({
     activeUnitId: initialGrid.units[0].id,
     scriptRunning: false,
     logs: [
-        { message: 'NEURAL_LINK_ESTABLISHED', type: 'info', timestamp: Date.now() },
-        { message: 'GRID_INITIALIZED_SECTOR_7', type: 'command', timestamp: Date.now() + 100 }
+        { id: 'init-1', message: 'NEURAL_LINK_ESTABLISHED', type: 'info', timestamp: Date.now() },
+        { id: 'init-2', message: 'GRID_INITIALIZED_SECTOR_7', type: 'command', timestamp: Date.now() + 100 }
     ],
     currentSnippet: null,
     cursorIndex: 0,
@@ -86,7 +86,7 @@ export const useGameStore = create<Store>((set, get) => ({
             survivalTime: 0,
             grid: grid,
             activeUnitId: grid.units[0].id,
-            logs: [{ message: 'OPERATION_NEON_SYNTAX_STARTED', type: 'info', timestamp: Date.now() }]
+            logs: [{ id: Math.random().toString(36).substring(2, 11), message: 'OPERATION_NEON_SYNTAX_STARTED', type: 'info', timestamp: Date.now() }]
         });
     },
 
@@ -158,7 +158,7 @@ export const useGameStore = create<Store>((set, get) => ({
 
     addLog: (message, type = 'info') => {
         set(state => ({
-            logs: [{ message, type, timestamp: Date.now() }, ...state.logs].slice(0, 50)
+            logs: [{ id: Math.random().toString(36).substring(2, 11), message, type, timestamp: Date.now() }, ...state.logs].slice(0, 50)
         }));
     },
 

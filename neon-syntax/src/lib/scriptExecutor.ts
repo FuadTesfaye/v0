@@ -1,4 +1,5 @@
 import { useGameStore } from '@/store/gameStore';
+import { ActionRequest } from '@/hooks/useScriptSandbox';
 
 /**
  * A simple, safe-ish script executor that maps user commands to store actions.
@@ -6,17 +7,19 @@ import { useGameStore } from '@/store/gameStore';
  */
 export async function executeScript(code: string): Promise<void> {
     const store = useGameStore.getState();
+    const activeUnitId = store.activeUnitId;
+
+    if (!activeUnitId) {
+        store.addLog('ERROR: No active unit linked for script execution.', 'error');
+        return;
+    }
 
     // Custom API exposed to the user script
     const api = {
         move: async (direction: 'NORTH' | 'SOUTH' | 'EAST' | 'WEST') => {
-            const dx = direction === 'EAST' ? 1 : direction === 'WEST' ? -1 : 0;
-            const dy = direction === 'SOUTH' ? 1 : direction === 'NORTH' ? -1 : 0;
+            const action: ActionRequest = { type: 'MOVE', payload: direction };
 
-            const moved = store.moveRobot('player1', dx, dy);
-            if (!moved) {
-                throw new Error(`Movement failed toward ${direction}`);
-            }
+            store.resolveTurn([{ unitId: activeUnitId, actions: [action] }]);
 
             // Artificial delay to visualize the movement
             await new Promise(resolve => setTimeout(resolve, 600));
@@ -36,16 +39,13 @@ export async function executeScript(code: string): Promise<void> {
 
     try {
         // Basic sandboxing: wrap user code in an async function and provide API
-        // WARNING: Function constructor is NOT fully secure, but sufficient for Phase 1.
         const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
         const userScript = new AsyncFunction('api', code);
 
         await userScript(api);
 
-        // Auto-end turn after script completion
-        store.endTurn();
-
     } catch (err: any) {
+        store.addLog(`Script Error: ${err.message}`, 'error');
         throw err;
     }
 }

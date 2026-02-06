@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useGameStore } from '@/store/gameStore';
 
 export default function ResultsScreen() {
-    const { score, accuracy, maxCombo, lastRunSuccess, setStage, resetGame } = useGameStore();
+    const { score, accuracy, maxCombo, lastRunSuccess, setStage } = useGameStore();
 
     const getRank = () => {
         if (accuracy > 95) return { label: 'S', color: 'text-cyan-400' };

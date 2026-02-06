@@ -1,6 +1,6 @@
 import { GridState } from './grid';
 
-export type GameStage = 'BOOT' | 'MENU' | 'DIFFICULTY' | 'PLAYING' | 'PAUSED' | 'RESULTS';
+export type GameStage = 'BOOT' | 'LANDING' | 'MENU' | 'DIFFICULTY' | 'PLAYING' | 'PAUSED' | 'RESULTS';
 export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
 
 export interface Snippet {
@@ -30,7 +30,7 @@ export interface GameState {
     grid: GridState;
     activeUnitId: string | null;
     scriptRunning: boolean;
-    logs: Array<{ message: string; type: 'info' | 'error' | 'success' | 'command'; timestamp: number }>;
+    logs: Array<{ id: string; message: string; type: 'info' | 'error' | 'success' | 'command'; timestamp: number }>;
 
     // Active Snippet
     currentSnippet: Snippet | null;

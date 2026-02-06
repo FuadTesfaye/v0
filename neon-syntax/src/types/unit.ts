@@ -1,1 +1,1 @@
-export type Unit = {};
+export type Unit = Record<string, never>;

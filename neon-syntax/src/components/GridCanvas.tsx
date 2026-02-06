@@ -1,45 +1,77 @@
 'use client';
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '@/store/gameStore';
-import { Tile, Unit } from '@/types/grid';
 
-interface GridCanvasProps {
-    size?: number;
-}
-
-export default function GridCanvas({ size = 500 }: GridCanvasProps) {
+export default function GridCanvas() {
+    const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const { grid, selectUnit, activeUnitId } = useGameStore();
+    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+    const { grid, activeUnitId } = useGameStore();
     const { tiles, units, turn, width, height } = grid;
+
+    // Handle resizing
+    useEffect(() => {
+        const updateSize = () => {
+            if (containerRef.current) {
+                const { clientWidth, clientHeight } = containerRef.current;
+                setDimensions({ width: clientWidth, height: clientHeight });
+            }
+        };
+
+        updateSize();
+        const observer = new ResizeObserver(updateSize);
+        if (containerRef.current) observer.observe(containerRef.current);
+
+        return () => observer.disconnect();
+    }, []);
 
     const draw = useCallback(() => {
         const canvas = canvasRef.current;
-        if (!canvas) return;
+        if (!canvas || dimensions.width === 0 || dimensions.height === 0) return;
 
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        const tileSizePx = size / Math.max(width, height);
-        const time = Date.now();
+        // Calculate tile size to fit grid within available space while maintaining aspect ratio
+        // We add a small padding (20px) to avoid edges touching
+        const paddedWidth = dimensions.width - 20;
+        const paddedHeight = dimensions.height - 20;
+
+        const tileSizePx = Math.min(
+            paddedWidth / Math.max(width, 1),
+            paddedHeight / Math.max(height, 1)
+        );
+
+        // Center the grid
+        const offsetX = (dimensions.width - (tileSizePx * width)) / 2;
+        const offsetY = (dimensions.height - (tileSizePx * height)) / 2;
 
         // Background
         ctx.fillStyle = '#020205';
-        ctx.fillRect(0, 0, size, size);
+        ctx.fillRect(0, 0, dimensions.width, dimensions.height);
+
+        // Save context for translation
+        ctx.save();
+        ctx.translate(Math.floor(offsetX), Math.floor(offsetY));
 
         // Grid Lines
         ctx.strokeStyle = 'rgba(6, 182, 212, 0.15)';
         ctx.lineWidth = 1;
+
+        // Draw Vertical Lines
         for (let i = 0; i <= width; i++) {
             ctx.beginPath();
             ctx.moveTo(i * tileSizePx, 0);
-            ctx.lineTo(i * tileSizePx, size);
+            ctx.lineTo(i * tileSizePx, height * tileSizePx);
             ctx.stroke();
         }
+
+        // Draw Horizontal Lines
         for (let j = 0; j <= height; j++) {
             ctx.beginPath();
             ctx.moveTo(0, j * tileSizePx);
-            ctx.lineTo(size, j * tileSizePx);
+            ctx.lineTo(width * tileSizePx, j * tileSizePx);
             ctx.stroke();
         }
 
@@ -118,7 +150,11 @@ export default function GridCanvas({ size = 500 }: GridCanvasProps) {
 
             ctx.restore();
         });
-    }, [tiles, units, width, height, size, activeUnitId]);
+
+        // Restore context from translation
+        ctx.restore();
+
+    }, [tiles, units, width, height, dimensions, activeUnitId]);
 
     useEffect(() => {
         let rafId: number;
@@ -132,30 +168,40 @@ export default function GridCanvas({ size = 500 }: GridCanvasProps) {
 
     return (
         <motion.div
-            className="relative"
+            ref={containerRef}
+            className="w-full h-full relative border-4 border-cyan-500/50 shadow-2xl rounded-xl bg-black/90 overflow-hidden"
             initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
+            animate={{
+                scale: 1,
+                opacity: 1,
+                boxShadow: [
+                    '0 0 20px rgba(6, 182, 212, 0.5)',
+                    '0 0 40px rgba(6, 182, 212, 0.3)',
+                    '0 0 20px rgba(6, 182, 212, 0.5)'
+                ]
+            }}
+            transition={{
+                duration: 0.8,
+                ease: 'easeOut',
+                boxShadow: { duration: 2, repeat: Infinity }
+            }}
         >
-            <motion.canvas
+            <canvas
                 ref={canvasRef}
-                width={size}
-                height={size}
-                className="border-4 border-cyan-500/50 shadow-2xl rounded-xl bg-black/90"
-                animate={{
-                    boxShadow: [
-                        '0 0 20px rgba(6, 182, 212, 0.5)',
-                        '0 0 40px rgba(6, 182, 212, 0.3)',
-                        '0 0 20px rgba(6, 182, 212, 0.5)'
-                    ]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
+                width={dimensions.width}
+                height={dimensions.height}
+                className="block"
             />
 
-            <div>Turn: {turn}</div>
-            <div>Energy: {units[0]?.energy || 0}/10</div>
-            <div className="text-xs mt-1 opacity-75">
-                Select units to write code. Press 'RUN CODE' to execute.
+            <div className="absolute top-4 right-4 pointer-events-none text-right font-mono text-cyan-500 text-xs">
+                <div>Turn: {turn}</div>
+                <div>Energy: {units[0]?.energy || 0}/10</div>
+            </div>
+
+            <div className="absolute bottom-4 left-0 right-0 text-center pointer-events-none">
+                <div className="text-xs text-cyan-500/75 font-mono bg-black/50 inline-block px-3 py-1 rounded">
+                    Select units to write code. Press &apos;RUN CODE&apos; to execute.
+                </div>
             </div>
         </motion.div>
     );
