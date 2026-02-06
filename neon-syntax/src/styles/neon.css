@@ -1,0 +1,7 @@
+/* Neon theme styles */
+@layer base {
+  :root {
+    --neon-blue: #00f2ff;
+    --neon-pink: #ff00ff;
+  }
+}
