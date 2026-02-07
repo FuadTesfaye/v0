@@ -5,6 +5,8 @@ import { RobotPixelGrid } from './ui/pixel-grid';
 import { Navbar } from './Navbar';
 import { useRouter } from 'next/navigation';
 import Faq2 from '@/components/mvpblocks/faq-2';
+import AboutUs from '@/components/mvpblocks/about-us';
+import FeaturesSection from '@/components/mvpblocks/features-section';
 
 export default function LandingPage() {
     const router = useRouter();
@@ -87,6 +89,12 @@ export default function LandingPage() {
                     </svg>
                 </motion.div>
             </div>
+
+            {/* About Us Section */}
+            <AboutUs />
+
+            {/* Features Section */}
+            <FeaturesSection />
 
             {/* FAQ Section */}
             <div className="relative z-10 bg-gradient-to-b from-transparent via-black/80 to-black">
