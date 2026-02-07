@@ -9,13 +9,13 @@ export interface ActionRequest {
 }
 
 export function useScriptSandbox() {
-    const { grid, activeUnitId } = useGameStore();
+    const { board, units, activeUnitId } = useGameStore();
 
     const executeScript = useCallback(async (script: string, language: string): Promise<ActionRequest[]> => {
         // Context data preparation
         // In a real implementation, this would be sanitized and limited based on "fog of war"
         // For now, we pass a simplified READ-ONLY version of the grid state relative to the unit
-        const activeUnit = grid.units.find(u => u.id === activeUnitId);
+        const activeUnit = units.find(u => u.id === activeUnitId);
         if (!activeUnit) throw new Error("No active unit for execution context");
 
         const context = {
@@ -23,11 +23,11 @@ export function useScriptSandbox() {
             // Helper to scan for entities
             scan: (type?: string) => {
                 // simple simulation of scanning nearby units
-                return grid.units
+                return units
                     .filter(u => u.id !== activeUnitId) // exclude self
                     .map(u => ({ id: u.id, type: u.type, position: u.position }));
             },
-            grid: { width: grid.width, height: grid.height }
+            grid: { width: board.width, height: board.height }
         };
 
         const memory = {}; // TODO: Persistence
@@ -82,7 +82,7 @@ export function useScriptSandbox() {
         }
 
         return [];
-    }, [grid, activeUnitId]);
+    }, [board, units, activeUnitId]);
 
     return { executeScript };
 }
