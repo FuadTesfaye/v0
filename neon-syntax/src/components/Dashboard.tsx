@@ -22,7 +22,7 @@ export default function Dashboard() {
                 <div>
                     <h2 className="text-xs font-mono text-cyan-500/60 uppercase tracking-[0.4em] mb-1">Sector 7 // Operation</h2>
                     <h1 className="text-4xl font-black bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
-                        NEON SYNTAX
+                        ALGOWARS
                     </h1>
                 </div>
                 <div className="flex gap-8 text-[10px] font-mono text-cyan-500/40 uppercase tracking-widest">

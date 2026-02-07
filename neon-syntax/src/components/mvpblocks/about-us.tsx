@@ -36,7 +36,7 @@ export default function AboutUs() {
                                 CODE IS <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 animate-pulse">POWER</span>
                             </h2>
                             <p className="text-cyan-100/70 text-lg leading-relaxed font-mono">
-                                Neon Syntax is not just a game; it's a <span className="text-cyan-400">testament to logic</span>.
+                                AlgoWars is not just a game; it's a <span className="text-cyan-400">testament to logic</span>.
                                 Born from the need for a true server-authoritative strategy engine, we've built a world where
                                 your ability to think algorithmically determines your survival.
                             </p>

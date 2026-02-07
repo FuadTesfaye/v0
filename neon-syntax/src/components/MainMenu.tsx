@@ -18,7 +18,7 @@ export default function MainMenu() {
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                 >
-                    NEON SYNTAX
+                    ALGOWARS
                 </motion.h1>
                 <motion.p
                     className="text-cyan-400 font-mono tracking-[0.5em] text-xs opacity-50"
@@ -58,7 +58,7 @@ export default function MainMenu() {
             </div>
 
             <div className="absolute bottom-12 text-[10px] font-mono text-white/20 tracking-tighter">
-                V2.0.0 // SYSTEM_OS_NEON
+                V2.0.0 // SYSTEM_OS_ALGO
             </div>
         </div>
     );
@@ -69,8 +69,8 @@ function MenuButton({ label, onClick, primary = false }: { label: string, onClic
         <motion.button
             onClick={onClick}
             className={`relative py-4 px-8 border-2 transition-all duration-300 group overflow-hidden ${primary
-                    ? 'border-cyan-500 text-cyan-400'
-                    : 'border-white/20 text-white/50 hover:border-white/40 hover:text-white/80'
+                ? 'border-cyan-500 text-cyan-400'
+                : 'border-white/20 text-white/50 hover:border-white/40 hover:text-white/80'
                 }`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
@@ -90,8 +90,8 @@ function DifficultyButton({ label, active, onClick }: { label: string, active: b
         <button
             onClick={onClick}
             className={`flex-1 py-2 text-[10px] font-bold border transition-all duration-300 tracking-widest ${active
-                    ? 'border-purple-500 text-purple-400 bg-purple-500/10'
-                    : 'border-white/10 text-white/30 hover:border-white/30'
+                ? 'border-purple-500 text-purple-400 bg-purple-500/10'
+                : 'border-white/10 text-white/30 hover:border-white/30'
                 }`}
         >
             {label}

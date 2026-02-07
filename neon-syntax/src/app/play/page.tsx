@@ -29,7 +29,7 @@ export default function Play() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-4">
-            <h1 className="text-3xl font-bold mb-8 neon-text">NEON SYNTAX</h1>
+            <h1 className="text-3xl font-bold mb-8 neon-text">ALGOWARS</h1>
 
             {!gameId ? (
                 <button

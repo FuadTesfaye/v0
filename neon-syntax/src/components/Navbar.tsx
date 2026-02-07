@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Github, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -37,11 +38,17 @@ export const Navbar = () => {
             <div className="container mx-auto px-4 md:px-6 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
-                    <div className="w-8 h-8 rounded bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center group-hover:shadow-[0_0_15px_rgba(34,211,238,0.5)] transition-shadow">
-                        <span className="font-bold text-black text-lg">N</span>
+                    <div className="relative w-8 h-8 flex items-center justify-center transition-transform group-hover:scale-110">
+                        <Image
+                            src="/assets/logo.ico"
+                            alt="AlgoWars Logo"
+                            width={32}
+                            height={32}
+                            className="object-contain"
+                        />
                     </div>
                     <span className="font-mono font-bold text-lg tracking-wider text-white group-hover:text-cyan-400 transition-colors">
-                        NEON_SYNTAX
+                        ALGOWARS
                     </span>
                 </Link>
 

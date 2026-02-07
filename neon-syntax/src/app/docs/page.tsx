@@ -177,16 +177,16 @@ export default function DocsPage() {
                         {/* Header */}
                         <div className="mb-16">
                             <h1 className="text-5xl md:text-6xl font-black tracking-tighter mb-6 text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-cyan-500">
-                                NEON SYNTAX <span className="block text-2xl md:text-3xl text-gray-400 font-bold mt-2 tracking-normal font-mono">Documentation Hub</span>
+                                ALGOWARS <span className="block text-2xl md:text-3xl text-gray-400 font-bold mt-2 tracking-normal font-mono">Documentation Hub</span>
                             </h1>
                             <p className="text-xl text-gray-400 max-w-2xl leading-relaxed">
-                                The comprehensive guide to the Neon Syntax protocol. Learn to command your units, optimize your algorithms, and dominate the grid.
+                                The comprehensive guide to the AlgoWars protocol. Learn to command your units, optimize your algorithms, and dominate the grid.
                             </p>
                         </div>
 
                         <Section id="introduction" title="Introduction" icon={Terminal}>
                             <p>
-                                <strong>Neon Syntax</strong> is a programmable strategy game where victory isn't determined by reflexes, but by logic. You assume the role of an Operator in a dystopian cyberpunk future, commanding automated units via direct code injection.
+                                <strong>AlgoWars</strong> is a programmable strategy game where victory isn't determined by reflexes, but by logic. You assume the role of an Operator in a dystopian cyberpunk future, commanding automated units via direct code injection.
                             </p>
                             <p>
                                 Unlike traditional RTS games, you do not directly control units with mouse clicks. Instead, you write scripts that define their behavior. Your code runs in real-time on the battlefield, executing your strategies autonomously.
@@ -331,7 +331,7 @@ interface Entity {
                         {/* Footer Area */}
                         <div className="mt-32 pt-16 border-t border-white/10 flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm">
                             <div>
-                                &copy; 2026 Neon Syntax. System Active.
+                                &copy; 2026 AlgoWars. System Active.
                             </div>
                             <div className="flex gap-6 mt-4 md:mt-0">
                                 <a href="#" className="hover:text-cyan-400 transition-colors">GitHub</a>

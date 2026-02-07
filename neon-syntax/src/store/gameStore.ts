@@ -90,7 +90,7 @@ export const useGameStore = create<Store>((set, get) => ({
             survivalTime: 0,
             grid: grid,
             activeUnitId: grid.units[0].id,
-            logs: [{ id: Math.random().toString(36).substring(2, 11), message: 'OPERATION_NEON_SYNTAX_STARTED', type: 'info', timestamp: Date.now() }]
+            logs: [{ id: Math.random().toString(36).substring(2, 11), message: 'OPERATION_ALGOWARS_STARTED', type: 'info', timestamp: Date.now() }]
         });
     },
 

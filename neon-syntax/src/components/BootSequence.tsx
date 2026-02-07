@@ -49,7 +49,7 @@ export default function BootSequence() {
                     }}
                     transition={{ duration: 0.1, repeat: 5, repeatDelay: 0.5 }}
                 >
-                    NEON SYNTAX
+                    ALGOWARS
                 </motion.h1>
 
                 {/* Rapid Character Flicker */}

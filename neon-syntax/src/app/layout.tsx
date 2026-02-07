@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Neon Syntax - Phase 1',
-  description: 'Programmable cyberpunk strategy game',
+  title: 'AlgoWars - Tactical Coding Strategy',
+  description: ' programmable cyberpunk strategy game where code is your weapon.',
 };
 
 export default function RootLayout({

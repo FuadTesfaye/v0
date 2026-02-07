@@ -34,7 +34,7 @@ export default function LoginPage() {
                             Welcome Back
                         </h1>
                         <p className="text-white/40 text-sm">
-                            Access your Neon Syntax terminal securely.
+                            Access your AlgoWars terminal securely.
                         </p>
                     </div>
 
@@ -71,7 +71,7 @@ export default function LoginPage() {
                             <label className="block text-xs font-medium text-white/50 mb-1.5 uppercase tracking-wider">Email Address</label>
                             <input
                                 type="email"
-                                placeholder="operative@neonsyntax.io"
+                                placeholder="operative@algowars.io"
                                 className="w-full px-4 py-2.5 bg-black/50 border border-white/10 rounded-lg focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 text-white placeholder-white/20 transition-all font-mono text-sm"
                             />
                         </div>

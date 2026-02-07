@@ -42,7 +42,7 @@ export default function LandingPage() {
                     className="text-center space-y-4"
                 >
                     <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-cyan-100 to-cyan-500 [text-shadow:0_0_20px_rgba(0,170,255,0.2)]">
-                        NEON SYNTAX
+                        ALGOWARS
                     </h1>
                     <p className="text-cyan-400/80 text-sm md:text-lg tracking-[0.2em] uppercase">
                         Neural Interface • Tactical Protocol

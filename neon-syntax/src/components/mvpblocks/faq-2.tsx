@@ -16,9 +16,9 @@ interface FaqItem {
 const faqItems: FaqItem[] = [
   {
     id: '1',
-    question: 'What is Neon Syntax?',
+    question: 'What is AlgoWars?',
     answer:
-      'Neon Syntax is a programmable tactical strategy game where you control units by writing code. It combines grid-based combat with real-time logic execution, set in a dystopian cyberpunk future.',
+      'AlgoWars is a programmable tactical strategy game where you control units by writing code. It combines grid-based combat with real-time logic execution, set in a dystopian cyberpunk future.',
     category: 'gameplay',
   },
   {
@@ -94,7 +94,7 @@ export default function Faq2() {
           </h2>
 
           <p className="text-cyan-200/60 max-w-2xl text-center font-mono text-sm leading-relaxed">
-            Accessing common queries regarding the Neon Syntax protocol.
+            Accessing common queries regarding the AlgoWars protocol.
             Decrypting answers for new operators.
           </p>
         </div>
