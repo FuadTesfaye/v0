@@ -20,12 +20,12 @@ export interface Node {
   type: NodeType;
   ownerId: PlayerId | null;
   state: NodeState;
-  
+
   // Resources
   energy: number;
   maxEnergy: number;
   flowRate: number; // Energy generated per tick
-  
+
   // Combat/Capture
   health: number;
   maxHealth: number;

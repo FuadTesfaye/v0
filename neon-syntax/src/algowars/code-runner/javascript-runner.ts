@@ -44,43 +44,43 @@ parentPort.on('message', (message) => {
 `;
 
 export class JavascriptRunner implements CodeRunner {
-    run(code: string, context: PlayerView, timeLimitMs: number = 1000): Promise<Action> {
-        return new Promise((resolve, reject) => {
-            const worker = new Worker(WORKER_CODE, { eval: true });
+  run(code: string, context: PlayerView, timeLimitMs: number = 1000): Promise<Action> {
+    return new Promise((resolve, reject) => {
+      const worker = new Worker(WORKER_CODE, { eval: true });
 
-            const timer = setTimeout(() => {
-                worker.terminate();
-                reject(new RunnerError('Execution timed out'));
-            }, timeLimitMs);
+      const timer = setTimeout(() => {
+        worker.terminate();
+        reject(new RunnerError('Execution timed out'));
+      }, timeLimitMs);
 
-            worker.on('message', (msg: any) => {
-                if (msg.type === 'result') {
-                    clearTimeout(timer);
-                    resolve(msg.result);
-                    worker.terminate();
-                } else if (msg.type === 'error') {
-                    clearTimeout(timer);
-                    reject(new RunnerError(msg.error));
-                    worker.terminate();
-                } else if (msg.type === 'log') {
-                    // console.log('[Sandbox Log]', ...msg.args);
-                }
-            });
+      worker.on('message', (msg: any) => {
+        if (msg.type === 'result') {
+          clearTimeout(timer);
+          resolve(msg.result);
+          worker.terminate();
+        } else if (msg.type === 'error') {
+          clearTimeout(timer);
+          reject(new RunnerError(msg.error));
+          worker.terminate();
+        } else if (msg.type === 'log') {
+          // console.log('[Sandbox Log]', ...msg.args);
+        }
+      });
 
-            worker.on('error', (err) => {
-                clearTimeout(timer);
-                reject(new RunnerError(err.message));
-                worker.terminate();
-            });
+      worker.on('error', (err) => {
+        clearTimeout(timer);
+        reject(new RunnerError(err.message));
+        worker.terminate();
+      });
 
-            worker.on('exit', (code) => {
-                if (code !== 0) {
-                    clearTimeout(timer);
-                    reject(new RunnerError(`Worker stopped with exit code ${code}`));
-                }
-            });
+      worker.on('exit', (code) => {
+        if (code !== 0) {
+          clearTimeout(timer);
+          reject(new RunnerError(`Worker stopped with exit code ${code}`));
+        }
+      });
 
-            worker.postMessage({ code, context });
-        });
-    }
+      worker.postMessage({ code, context });
+    });
+  }
 }
