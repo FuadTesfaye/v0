@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/Navbar";
 import { Github, Mail, Chrome } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
@@ -13,45 +12,23 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
-    const supabase = createClient();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
 
-        try {
-            const { error: signInError } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
-
-            if (signInError) {
-                setError(signInError.message);
-            } else {
-                router.push("/");
-                router.refresh();
-            }
-        } catch (err) {
-            setError("An unexpected error occurred.");
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
+        // Mock login for now
+        setTimeout(() => {
+            router.push("/");
+            router.refresh();
+        }, 1000);
     };
 
     const handleSocialLogin = async (provider: 'github' | 'google') => {
         setLoading(true);
-        // Implement social login logic here
-        // For example:
-        // await supabase.auth.signInWithOAuth({
-        //   provider: provider,
-        //   options: {
-        //     redirectTo: `${location.origin}/auth/callback`,
-        //   },
-        // })
         console.log(`Authenticating with ${provider}...`);
-        alert(`Integration for ${provider} coming soon! Enable it in Supabase Dashboard.`);
+        alert(`Integration for ${provider} coming soon!`);
         setLoading(false);
     };
 
