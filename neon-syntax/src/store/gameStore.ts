@@ -11,6 +11,7 @@ const SNIPPETS: Snippet[] = [
 interface GameActions {
     setStage: (stage: GameStage) => void;
     setDifficulty: (diff: Difficulty) => void;
+    setLanguage: (lang: GameState['language']) => void;
     startGame: () => void;
     pauseGame: () => void;
     resumeGame: () => void;
@@ -43,9 +44,12 @@ export const useGameStore = create<Store>((set, get) => ({
     accuracy: 0,
     totalAttempts: 0,
     correctAttempts: 0,
+    language: null,
     grid: initialGrid,
     activeUnitId: initialGrid.units[0].id,
     scriptRunning: false,
+
+    setLanguage: (language) => set({ language }),
     logs: [
         { id: 'init-1', message: 'NEURAL_LINK_ESTABLISHED', type: 'info', timestamp: Date.now() },
         { id: 'init-2', message: 'GRID_INITIALIZED_SECTOR_7', type: 'command', timestamp: Date.now() + 100 }

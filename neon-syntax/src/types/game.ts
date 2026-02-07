@@ -1,7 +1,8 @@
 import { GridState } from './grid';
 
-export type GameStage = 'BOOT' | 'LANDING' | 'MENU' | 'DIFFICULTY' | 'PLAYING' | 'PAUSED' | 'RESULTS';
+export type GameStage = 'BOOT' | 'LANDING' | 'LANGUAGE_SELECT' | 'MENU' | 'DIFFICULTY' | 'PLAYING' | 'PAUSED' | 'RESULTS';
 export type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
+export type Language = 'python' | 'javascript';
 
 export interface Snippet {
     id: string;
@@ -15,6 +16,7 @@ export interface Snippet {
 export interface GameState {
     stage: GameStage;
     difficulty: Difficulty;
+    language: Language | null;
 
     // Gameplay Stats
     score: number;

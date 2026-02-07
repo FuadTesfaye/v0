@@ -2,6 +2,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '@/store/gameStore';
+import { MiniBot } from './ui/mini-bot';
 
 export default function GridCanvas() {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -47,16 +48,15 @@ export default function GridCanvas() {
         const offsetX = (dimensions.width - (tileSizePx * width)) / 2;
         const offsetY = (dimensions.height - (tileSizePx * height)) / 2;
 
-        // Background
-        ctx.fillStyle = '#020205';
-        ctx.fillRect(0, 0, dimensions.width, dimensions.height);
+        // Background - Transparent so CSS background shows through
+        ctx.clearRect(0, 0, dimensions.width, dimensions.height);
 
         // Save context for translation
         ctx.save();
         ctx.translate(Math.floor(offsetX), Math.floor(offsetY));
 
-        // Grid Lines
-        ctx.strokeStyle = 'rgba(6, 182, 212, 0.15)';
+        // Grid Lines - Subtle overlay
+        ctx.strokeStyle = 'rgba(6, 182, 212, 0.2)';
         ctx.lineWidth = 1;
 
         // Draw Vertical Lines
@@ -85,7 +85,8 @@ export default function GridCanvas() {
                 const ty = y * tileSizePx;
 
                 if (!tile.revealed) {
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                    // Fog of war - Semi-transparent to show board texture but indicate hidden area
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
                     ctx.fillRect(tx, ty, tileSizePx, tileSizePx);
                     continue;
                 }
@@ -112,44 +113,8 @@ export default function GridCanvas() {
             }
         }
 
-        // Units
-        units.forEach((unit) => {
-            const tx = unit.position.x * tileSizePx;
-            const ty = unit.position.y * tileSizePx;
-            const cx = tx + tileSizePx / 2;
-            const cy = ty + tileSizePx / 2;
-
-            if (!tiles[unit.position.x][unit.position.y].revealed && unit.owner === 'ENEMY') return;
-
-            ctx.save();
-            ctx.translate(cx, cy);
-
-            // unit body
-            const color = unit.owner === 'PLAYER' ? '#06b6d4' : '#ef4444';
-            ctx.shadowColor = color;
-            ctx.shadowBlur = 10;
-            ctx.fillStyle = color;
-
-            if (unit.type === 'SCOUT') {
-                ctx.beginPath();
-                ctx.moveTo(0, -tileSizePx / 4);
-                ctx.lineTo(tileSizePx / 4, tileSizePx / 4);
-                ctx.lineTo(-tileSizePx / 4, tileSizePx / 4);
-                ctx.closePath();
-            } else {
-                ctx.fillRect(-tileSizePx / 4, -tileSizePx / 4, tileSizePx / 2, tileSizePx / 2);
-            }
-            ctx.fill();
-
-            // Active indicator
-            if (unit.id === activeUnitId) {
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(-tileSizePx / 2 + 2, -tileSizePx / 2 + 2, tileSizePx - 4, tileSizePx - 4);
-            }
-
-            ctx.restore();
-        });
+        // Units are now rendered as DOM overlays (MiniBot)
+        // Leaving this empty or removing the loop entirely
 
         // Restore context from translation
         ctx.restore();
@@ -169,7 +134,7 @@ export default function GridCanvas() {
     return (
         <motion.div
             ref={containerRef}
-            className="w-full h-full relative border-4 border-cyan-500/50 shadow-2xl rounded-xl bg-black/90 overflow-hidden"
+            className="w-full h-full relative border-4 border-cyan-500/50 shadow-2xl rounded-xl overflow-hidden bg-black"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{
                 scale: 1,
@@ -186,12 +151,77 @@ export default function GridCanvas() {
                 boxShadow: { duration: 2, repeat: Infinity }
             }}
         >
+            <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                    backgroundImage: "url('/assets/board.png')",
+                    backgroundSize: '100% 100%',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                }}
+            />
             <canvas
                 ref={canvasRef}
                 width={dimensions.width}
                 height={dimensions.height}
                 className="block"
             />
+
+            {/* Units Overlay */}
+            {dimensions.width > 0 && units.map((unit) => {
+                const paddedWidth = dimensions.width - 20;
+                const paddedHeight = dimensions.height - 20;
+                const tileSizePx = Math.min(
+                    paddedWidth / Math.max(width, 1),
+                    paddedHeight / Math.max(height, 1)
+                );
+                const offsetX = (dimensions.width - (tileSizePx * width)) / 2;
+                const offsetY = (dimensions.height - (tileSizePx * height)) / 2;
+
+                const left = offsetX + unit.position.x * tileSizePx;
+                const top = offsetY + unit.position.y * tileSizePx;
+
+                // Only show if revealed or owned by player 
+                // But for now show all to verify logic unless strictly hidden
+                const isVisible = tiles[unit.position.x][unit.position.y].revealed || unit.owner === 'PLAYER';
+
+                if (!isVisible) return null;
+
+                return (
+                    <motion.div
+                        key={unit.id}
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{
+                            opacity: 1,
+                            scale: 1,
+                            left: left,
+                            top: top
+                        }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        className="absolute w-10 h-10 pointer-events-none"
+                        style={{
+                            width: tileSizePx,
+                            height: tileSizePx
+                        }}
+                    >
+                        <div className="w-full h-full flex items-center justify-center relative">
+                            {/* Selection Ring */}
+                            {activeUnitId === unit.id && (
+                                <motion.div
+                                    className="absolute inset-0 rounded-full border-2 border-white/50 shadow-[0_0_15px_rgba(255,255,255,0.5)]"
+                                    layoutId="selection-ring"
+                                    transition={{ duration: 0.2 }}
+                                />
+                            )}
+                            <MiniBot
+                                color={unit.owner === 'PLAYER' ? '#06b6d4' : '#ef4444'}
+                                className="w-[80%] h-[80%]"
+                                isMoving={activeUnitId === unit.id} // Simple animation trigger
+                            />
+                        </div>
+                    </motion.div>
+                );
+            })}
 
             <div className="absolute top-4 right-4 pointer-events-none text-right font-mono text-cyan-500 text-xs">
                 <div>Turn: {turn}</div>
