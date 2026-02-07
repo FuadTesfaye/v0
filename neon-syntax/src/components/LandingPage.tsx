@@ -97,7 +97,7 @@ export default function LandingPage() {
                 <AboutUs />
 
                 {/* FAQ Section */}
-                <div className="py-24 border-t border-white/5">
+                <div id="faq" className="py-24 border-t border-white/5 scroll-mt-24">
                     <div className="container mx-auto px-6 max-w-4xl">
                         <h2 className="text-3xl font-black text-center text-white mb-16 uppercase">System FAQ</h2>
                         <Faq2 />

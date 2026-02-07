@@ -66,7 +66,7 @@ export default function AlgoWarsLanding() {
                             description="Engage in a structured series of tactical challenges. Progress through zones, unlock new APIs, and face adaptive enemy logic."
                             href="/algowars/campaign"
                             icon={<Crosshair size={24} />}
-                            disabled
+                            comingSoon
                         />
                     </motion.div>
 
