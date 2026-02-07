@@ -18,9 +18,10 @@ export const Navbar = () => {
     }, []);
 
     const navLinks = [
-        { name: "Features", href: "#features" },
-        { name: "Lore", href: "#lore" },
-        { name: "FAQs", href: "#faq" },
+        { name: "Features", href: "/#features" },
+        { name: "Lore", href: "/#lore" },
+        { name: "FAQs", href: "/#faq" },
+        { name: "Docs", href: "/docs" },
     ];
 
     return (
