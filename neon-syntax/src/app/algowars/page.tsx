@@ -80,7 +80,6 @@ export default function AlgoWarsLanding() {
                             description="Upload your battle code to the global grid. Async PvP matches against other engineers. Climb the ELO ladder."
                             href="/algowars/ranked"
                             icon={<Trophy size={24} />}
-                            disabled
                         />
                     </motion.div>
 
