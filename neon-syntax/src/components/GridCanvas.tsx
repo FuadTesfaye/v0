@@ -48,16 +48,15 @@ export default function GridCanvas() {
         const offsetX = (dimensions.width - (tileSizePx * width)) / 2;
         const offsetY = (dimensions.height - (tileSizePx * height)) / 2;
 
-        // Background
-        ctx.fillStyle = '#020205';
-        ctx.fillRect(0, 0, dimensions.width, dimensions.height);
+        // Background - Transparent so CSS background shows through
+        ctx.clearRect(0, 0, dimensions.width, dimensions.height);
 
         // Save context for translation
         ctx.save();
         ctx.translate(Math.floor(offsetX), Math.floor(offsetY));
 
-        // Grid Lines
-        ctx.strokeStyle = 'rgba(6, 182, 212, 0.15)';
+        // Grid Lines - Subtle overlay
+        ctx.strokeStyle = 'rgba(6, 182, 212, 0.2)';
         ctx.lineWidth = 1;
 
         // Draw Vertical Lines
@@ -86,7 +85,8 @@ export default function GridCanvas() {
                 const ty = y * tileSizePx;
 
                 if (!tile.revealed) {
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                    // Fog of war - Semi-transparent to show board texture but indicate hidden area
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
                     ctx.fillRect(tx, ty, tileSizePx, tileSizePx);
                     continue;
                 }
@@ -134,7 +134,7 @@ export default function GridCanvas() {
     return (
         <motion.div
             ref={containerRef}
-            className="w-full h-full relative border-4 border-cyan-500/50 shadow-2xl rounded-xl bg-black/90 overflow-hidden"
+            className="w-full h-full relative border-4 border-cyan-500/50 shadow-2xl rounded-xl overflow-hidden bg-black"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{
                 scale: 1,
@@ -151,6 +151,15 @@ export default function GridCanvas() {
                 boxShadow: { duration: 2, repeat: Infinity }
             }}
         >
+            <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                    backgroundImage: "url('/assets/board.png')",
+                    backgroundSize: '100% 100%',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                }}
+            />
             <canvas
                 ref={canvasRef}
                 width={dimensions.width}
