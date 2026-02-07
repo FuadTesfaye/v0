@@ -7,7 +7,7 @@ import { SCAFFOLDS } from '@/lib/scaffolds';
 
 export default function ScriptEditor() {
     const {
-        grid,
+        units,
         activeUnitId,
         updateUnitScript,
         resolveTurn,
@@ -17,7 +17,7 @@ export default function ScriptEditor() {
         language
     } = useGameStore();
 
-    const activeUnit = grid.units.find(u => u.id === activeUnitId);
+    const activeUnit = units.find(u => u.id === activeUnitId);
     // Determine language to use: unit's specific language if any (future proofing) or game global language
     const editorLanguage = language || 'javascript';
     const [code, setCode] = useState(activeUnit?.currentScript || SCAFFOLDS[editorLanguage] || '');

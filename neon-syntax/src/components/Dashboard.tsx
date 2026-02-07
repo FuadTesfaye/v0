@@ -6,14 +6,8 @@ import ConsolePanel from './ConsolePanel';
 import { useGameStore } from '@/store/gameStore';
 
 export default function Dashboard() {
-    const { updateTimer } = useGameStore();
+    // Timer logic removed as it's not implemented in store
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            updateTimer(100);
-        }, 100);
-        return () => clearInterval(interval);
-    }, [updateTimer]);
 
     return (
         <div className="w-full h-screen flex flex-col gap-4 p-4 lg:p-6 overflow-hidden">

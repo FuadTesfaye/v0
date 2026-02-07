@@ -6,7 +6,6 @@ export default function MainMenu() {
     const { setStage, setDifficulty, difficulty } = useGameStore();
 
     const handleStart = () => {
-        setStage('PLAYING');
         useGameStore.getState().startGame();
     };
 

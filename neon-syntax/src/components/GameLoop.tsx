@@ -4,33 +4,34 @@ import { useEffect, useRef } from 'react';
 import { useGameStore } from '@/store/gameStore';
 
 export function GameLoop() {
-    const { tick, stage } = useGameStore();
-    const lastTimeRef = useRef<number>(0);
-    const requestRef = useRef<number>();
-
-    const loop = (time: number) => {
-        if (lastTimeRef.current !== 0) {
-            const delta = time - lastTimeRef.current;
-            // Cap delta to prevent huge jumps if tab inactive
-            const cappedDelta = Math.min(delta, 100);
-            tick(cappedDelta);
-        }
-        lastTimeRef.current = time;
-        requestRef.current = requestAnimationFrame(loop);
-    };
+    const { tick, status } = useGameStore();
 
     useEffect(() => {
-        if (stage === 'PLAYING') {
-            requestRef.current = requestAnimationFrame(loop);
+        let requestRef: number;
+        let lastTimeRef = 0;
+
+        const loop = (time: number) => {
+            if (lastTimeRef !== 0) {
+                const delta = time - lastTimeRef;
+                // Cap delta to prevent huge jumps if tab inactive
+                const cappedDelta = Math.min(delta, 100);
+                tick(cappedDelta);
+            }
+            lastTimeRef = time;
+            requestRef = requestAnimationFrame(loop);
+        };
+
+        if (status === 'PLAYING') {
+            requestRef = requestAnimationFrame(loop);
         } else {
-            lastTimeRef.current = 0;
-            if (requestRef.current) cancelAnimationFrame(requestRef.current);
+            lastTimeRef = 0;
+            // No cleanup needed here as useEffect cleanup handles cancel
         }
 
         return () => {
-            if (requestRef.current) cancelAnimationFrame(requestRef.current);
+            if (requestRef) cancelAnimationFrame(requestRef);
         };
-    }, [stage, tick]);
+    }, [status, tick]);
 
     return null; // Logic only component
 }

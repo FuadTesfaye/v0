@@ -18,6 +18,7 @@ export interface Unit {
     maxHealth: number;
     energy: number; // For Master Bot
     actions: number; // Action slots per turn
+    currentScript?: string;
 }
 
 export interface Tile {
@@ -37,14 +38,36 @@ export interface BoardState {
     tiles: Tile[][];
 }
 
+export interface LogEntry {
+    id: string;
+    message: string;
+    type: 'info' | 'error' | 'success' | 'command';
+    timestamp: number;
+}
+
+export interface Dialogue {
+    id: string;
+    speaker: string;
+    message: string;
+    avatar?: string;
+}
+
 export interface AlgoWarsState {
     turn: number;
     board: BoardState;
     units: Unit[];
+    currentDialogue: Dialogue | null;
     resources: {
         energy: number;
         virusNodesAvailable: number;
     };
+    stage: 'BOOT' | 'MENU' | 'GAME';
+    language: 'python' | 'javascript';
+    difficulty: 'EASY' | 'MEDIUM' | 'HARD';
     status: 'PLAYING' | 'VICTORY' | 'DEFEAT';
-    logs: string[];
+    score: number;
+    accuracy: number;
+    maxCombo: number;
+    lastRunSuccess: boolean;
+    logs: LogEntry[];
 }

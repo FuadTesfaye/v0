@@ -1,7 +1,7 @@
 
 import { create } from 'zustand';
 import {
-    AlgoWarsState, Unit, Tile, UnitType, ActionType, Position, BoardState, TileType
+    AlgoWarsState, Unit, Tile, UnitType, ActionType, Position, BoardState, TileType, LogEntry
 } from '@/engine/types/AlgoWarsTypes';
 import { BoardLogic } from '@/engine/logic/BoardLogic';
 import { VirusLogic } from '@/engine/logic/VirusLogic';
@@ -19,12 +19,20 @@ interface GameActions {
 
     // UI Helpers
     selectUnit: (unitId: string | null) => void;
-    addLog: (message: string) => void;
+    addLog: (message: string, type?: LogEntry['type']) => void;
+    setStage: (stage: 'BOOT' | 'MENU' | 'GAME') => void;
+    setLanguage: (lang: 'python' | 'javascript') => void;
+    setDifficulty: (diff: 'EASY' | 'MEDIUM' | 'HARD') => void;
+    tick: (delta: number) => void;
+    updateUnitScript: (unitId: string, script: string) => void;
+    setScriptRunning: (running: boolean) => void;
+    resolveTurn: (actions: any[]) => void;
 }
 
 type Store = AlgoWarsState & GameActions & {
     activeUnitId: string | null;
     selectionMode: 'NONE' | 'PLACE_VIRUS';
+    scriptRunning: boolean;
 };
 
 // Initial Setup Helper
@@ -80,7 +88,18 @@ const createInitialState = (): AlgoWarsState => {
         units: [masterBot, ratKing],
         resources: { energy: 4, virusNodesAvailable: 3 },
         status: 'PLAYING',
-        logs: ['ALGO_WARS_INITIALIZED', 'OP_ORD_RECEIVED: ELIMINATE_RAT_KING']
+        stage: 'BOOT',
+        language: 'javascript',
+        difficulty: 'EASY',
+        currentDialogue: null,
+        score: 0,
+        accuracy: 100,
+        maxCombo: 0,
+        lastRunSuccess: false,
+        logs: [
+            { id: 'init-1', message: 'ALGO_WARS_INITIALIZED', type: 'info', timestamp: Date.now() },
+            { id: 'init-2', message: 'OP_ORD_RECEIVED: ELIMINATE_RAT_KING', type: 'command', timestamp: Date.now() }
+        ]
     };
 };
 
@@ -88,8 +107,9 @@ export const useGameStore = create<Store>((set, get) => ({
     ...createInitialState(),
     activeUnitId: null,
     selectionMode: 'NONE',
+    scriptRunning: false,
 
-    startGame: () => set({ ...createInitialState(), activeUnitId: 'master-1' }),
+    startGame: () => set({ ...createInitialState(), activeUnitId: 'master-1', stage: 'GAME' }),
 
     endTurn: () => {
         const { turn, resources, units, board } = get();
@@ -119,6 +139,7 @@ export const useGameStore = create<Store>((set, get) => ({
     },
 
     endGame: (victory) => set({ status: victory ? 'VICTORY' : 'DEFEAT' }),
+    setStage: (stage) => set({ stage }),
 
     moveUnit: (unitId, direction) => {
         const { units, board, resources } = get();
@@ -291,6 +312,28 @@ export const useGameStore = create<Store>((set, get) => ({
     },
 
     selectUnit: (unitId) => set({ activeUnitId: unitId }),
-    addLog: (message) => set(state => ({ logs: [message, ...state.logs].slice(0, 20) }))
+    addLog: (message, type = 'info') => set(state => ({
+        logs: [{
+            id: crypto.randomUUID(),
+            message,
+            type,
+            timestamp: Date.now()
+        }, ...state.logs].slice(0, 50)
+    })),
+    tick: (delta) => {
+        // Real-time update logic
+    },
+    setLanguage: (lang) => set({ language: lang }),
+    setDifficulty: (diff) => set({ difficulty: diff }),
+    updateUnitScript: (unitId, script) => {
+        const units = get().units.map(u => u.id === unitId ? { ...u, currentScript: script } : u);
+        set({ units });
+    },
+    setScriptRunning: (running) => set({ scriptRunning: running }),
+    resolveTurn: (actions) => {
+        // Mock Implementation for now
+        get().addLog('Turn actions resolved (mock).');
+        get().endTurn();
+    }
 }));
 
