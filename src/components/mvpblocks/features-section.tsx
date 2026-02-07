@@ -207,7 +207,7 @@ export default function FeaturesSection() {
                                                         {Array.from({ length: 36 }).map((_, i) => (
                                                             <div key={i} className={cn(
                                                                 "rounded-sm transition-colors duration-500",
-                                                                Math.random() > 0.7 ? "bg-green-500/40" : "bg-white/5",
+                                                                (i + 1) % 3 === 0 ? "bg-green-500/40" : "bg-white/5",
                                                                 "hover:bg-green-400/60"
                                                             )} />
                                                         ))}
