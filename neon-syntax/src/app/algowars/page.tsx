@@ -1,5 +1,6 @@
 'use client';
 import { AnimatePresence, motion } from 'framer-motion';
+import LanguageSelector from '@/components/LanguageSelector';
 import { useGameStore } from '@/store/gameStore';
 import BootSequence from '@/components/BootSequence';
 import MainMenu from '@/components/MainMenu';
@@ -8,19 +9,35 @@ import Dashboard from '@/components/Dashboard';
 import { useEffect } from 'react';
 
 export default function GamePage() {
-    const { stage, setStage } = useGameStore();
+    const { stage, setStage, language } = useGameStore();
 
     useEffect(() => {
-        // Ensure we start fresh or in BOOT if coming from Landing
-        if (stage === 'LANDING') {
+        // If no language selected, force selection
+        if (!language) {
+            setStage('LANGUAGE_SELECT');
+        }
+        // If coming from landing but language is set, boot
+        else if (stage === 'LANDING') {
             setStage('BOOT');
         }
-    }, [stage, setStage]);
+    }, [stage, setStage, language]);
 
     return (
         <main className="min-h-screen w-full relative overflow-hidden bg-[#020205] text-white">
             {/* Game Stages */}
             <AnimatePresence mode="wait">
+                {stage === 'LANGUAGE_SELECT' && (
+                    <motion.div
+                        key="lang-select"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 z-50 bg-[#020205]"
+                    >
+                        <LanguageSelector />
+                    </motion.div>
+                )}
+
                 {stage === 'BOOT' && (
                     <BootSequence key="boot" />
                 )}

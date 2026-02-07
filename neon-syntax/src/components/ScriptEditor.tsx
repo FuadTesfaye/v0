@@ -3,6 +3,7 @@ import Editor from '@monaco-editor/react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '@/store/gameStore';
 import { useScriptSandbox } from '@/hooks/useScriptSandbox';
+import { SCAFFOLDS } from '@/lib/scaffolds';
 
 export default function ScriptEditor() {
     const {
@@ -12,19 +13,23 @@ export default function ScriptEditor() {
         resolveTurn,
         scriptRunning,
         setScriptRunning,
-        addLog
+        addLog,
+        language
     } = useGameStore();
 
     const activeUnit = grid.units.find(u => u.id === activeUnitId);
-    const [code, setCode] = useState(activeUnit?.currentScript || '');
+    // Determine language to use: unit's specific language if any (future proofing) or game global language
+    const editorLanguage = language || 'javascript';
+    const [code, setCode] = useState(activeUnit?.currentScript || SCAFFOLDS[editorLanguage] || '');
     const editorRef = useRef<any>(null);
     const { executeScript } = useScriptSandbox();
 
     useEffect(() => {
         if (activeUnit) {
-            setCode(activeUnit.currentScript);
+            // If unit has script, use it. Else use scaffold for current language.
+            setCode(activeUnit.currentScript || SCAFFOLDS[editorLanguage]);
         }
-    }, [activeUnitId]);
+    }, [activeUnitId, activeUnit?.currentScript, editorLanguage]);
 
     const handleRunCode = async () => {
         if (scriptRunning || !activeUnitId) return;
@@ -34,7 +39,8 @@ export default function ScriptEditor() {
 
         try {
             // 1. Get actions from sandbox
-            const actions = executeScript(code);
+            // 1. Get actions from sandbox
+            const actions = await executeScript(code, editorLanguage);
 
             // 2. Update the script in store
             updateUnitScript(activeUnitId, code);
@@ -69,7 +75,8 @@ export default function ScriptEditor() {
             <div className="flex-1 relative min-h-[400px]">
                 <Editor
                     height="100%"
-                    defaultLanguage="javascript"
+                    defaultLanguage={editorLanguage}
+                    language={editorLanguage}
                     theme="vs-dark"
                     value={code}
                     onChange={(val) => setCode(val || '')}

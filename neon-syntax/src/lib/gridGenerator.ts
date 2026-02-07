@@ -38,7 +38,7 @@ export function generateGrid(width: number = 10, height: number = 10): GridState
             energy: 10,
             maxEnergy: 10,
             position: { x: 0, y: 0 },
-            currentScript: `// Move to scan the area\napi.move('EAST');\napi.move('EAST');\napi.move('SOUTH');\napi.scan();`
+            currentScript: ''
         },
         {
             id: 'e1-scout',
@@ -49,7 +49,7 @@ export function generateGrid(width: number = 10, height: number = 10): GridState
             energy: 10,
             maxEnergy: 10,
             position: { x: width - 1, y: height - 1 },
-            currentScript: `api.move('WEST');`
+            currentScript: ''
         }
     ];
 
