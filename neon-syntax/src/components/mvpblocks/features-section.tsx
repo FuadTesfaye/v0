@@ -82,7 +82,7 @@ export default function FeaturesSection() {
     const trainY = useTransform(smoothProgress, [0, 1], ['0%', '100%']);
 
     return (
-        <section ref={containerRef} className="relative py-24 z-20 overflow-hidden bg-black">
+        <section id="features" ref={containerRef} className="relative py-24 z-20 overflow-hidden bg-black scroll-mt-24">
 
             <div className="container mx-auto max-w-7xl px-4 md:px-6 relative z-10">
                 <div className="mb-20 flex flex-col items-center">

@@ -5,7 +5,7 @@ import { Network, Shield, Code2 } from 'lucide-react';
 
 export default function LoreSection() {
     return (
-        <section id="lore" className="py-24 bg-black relative border-y border-white/5">
+        <section id="lore" className="py-24 bg-black relative border-y border-white/5 scroll-mt-24">
             <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
                 {/* Text Content */}

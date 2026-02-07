@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>System Access Granted</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body style="margin:0; padding:0; background-color:#0a0d14; font-family:Arial, Helvetica, sans-serif; color:#e6e9f0;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0d14;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+
+        <!-- Container -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px; background:#0f1420; border-radius:8px; overflow:hidden; border:1px solid #1c2340;">
+
+          <!-- Header -->
+          <tr>
+            <td style="padding:24px 24px 16px 24px; border-bottom:1px solid #1c2340;">
+              <div style="font-size:12px; letter-spacing:2px; color:#7f8cff;">
+                SYSTEM STATUS
+              </div>
+              <div style="font-size:22px; font-weight:bold; margin-top:8px;">
+                Access Granted
+              </div>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:24px;">
+              <p style="margin:0 0 16px 0; font-size:14px; line-height:1.6;">
+                Hello <strong>{{USER_NAME}}</strong>,
+              </p>
+
+              <p style="margin:0 0 20px 0; font-size:14px; line-height:1.6;">
+                Your access to <strong>{{PRODUCT_NAME}}</strong> has been successfully initialized.
+                This environment is designed for precision, control, and execution.
+              </p>
+
+              <!-- Status Box -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0d14; border:1px solid #1c2340; border-radius:6px; margin-bottom:24px;">
+                <tr>
+                  <td style="padding:16px; font-size:13px;">
+                    <div><strong>Account:</strong> Active</div>
+                    <div><strong>Access Level:</strong> {{ACCESS_LEVEL}}</div>
+                    <div><strong>Environment:</strong> {{ENVIRONMENT}}</div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA -->
+              <table cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <a href="{{CTA_LINK}}"
+                       style="display:inline-block; padding:12px 20px; background:#7f8cff; color:#0a0d14;
+                              text-decoration:none; font-size:14px; font-weight:bold; border-radius:4px;">
+                      Enter System
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:24px 0 0 0; font-size:12px; line-height:1.6; color:#9aa1c4;">
+                This is a live environment. Actions are persistent.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:16px 24px; border-top:1px solid #1c2340; font-size:11px; color:#6f76a8;">
+              <div>— Fuad</div>
+              <div>{{TEAM_NAME}}</div>
+              <div style="margin-top:8px;">
+                <a href="{{SUPPORT_LINK}}" style="color:#7f8cff; text-decoration:none;">Support Console</a>
+              </div>
+            </td>
+          </tr>
+
+        </table>
+        <!-- End Container -->
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
