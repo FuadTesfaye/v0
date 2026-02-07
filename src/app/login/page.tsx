@@ -18,11 +18,14 @@ export default function LoginPage() {
         setLoading(true);
         setError(null);
 
-        // Mock login for now
-        setTimeout(() => {
+        try {
+            // Mock login for now
+            await new Promise(resolve => setTimeout(resolve, 1000));
             router.push("/");
-            router.refresh();
-        }, 1000);
+        } catch (err) {
+            setError("Login failed. Please try again.");
+            setLoading(false);
+        }
     };
 
     const handleSocialLogin = async (provider: 'github' | 'google') => {
