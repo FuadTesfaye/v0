@@ -25,7 +25,6 @@ export const Navbar = () => {
         { name: "Docs", href: "/docs" },
     ];
 
-    
     return (
         <motion.nav
             initial={{ y: -100, opacity: 0 }}

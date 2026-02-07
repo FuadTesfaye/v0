@@ -185,17 +185,28 @@ export default function DocsPage() {
                         </div>
 
                         <Section id="introduction" title="Introduction" icon={Terminal}>
-                            <p>
-                                <strong>AlgoWars</strong> is a programmable strategy game where victory isn't determined by reflexes, but by logic. You assume the role of an Operator in a dystopian cyberpunk future, commanding automated units via direct code injection.
+                            <p className="text-lg text-white mb-4">
+                                Welcome to the <strong>AlgoWars</strong> scripting documentation.
                             </p>
                             <p>
-                                Unlike traditional RTS games, you do not directly control units with mouse clicks. Instead, you write scripts that define their behavior. Your code runs in real-time on the battlefield, executing your strategies autonomously.
+                                AlgoWars provides a sandboxed, secure environment for you to test your algorithmic thinking. You will write unit logic using a standard <strong>JavaScript/TypeScript</strong> subset.
+                            </p>
+                            <div className="my-6 p-4 rounded-lg bg-cyan-900/10 border border-cyan-500/20">
+                                <h4 className="text-cyan-400 font-bold mb-2 flex items-center gap-2">
+                                    <Zap className="w-4 h-4" /> No Game Dev Experience Required
+                                </h4>
+                                <p className="text-sm text-cyan-200/70">
+                                    You don't need to know Unity, Unreal, or complex rendering pipelines. You just write the <code>onTick()</code> function, and our server handles the rest.
+                                </p>
+                            </div>
+                            <p>
+                                While advanced optimization and complex state machines are possible for veteran developers, beginners can start with simple <code>if/else</code> logic and still be competitive.
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                                <InfoCard title="Genre" value="Prog. Strategy" label="RTS / Coding" />
-                                <InfoCard title="Language" value="TypeScript" label="Subset / ES6" />
-                                <InfoCard title="Engine" value="Custom" label="React + Canvas" />
-                                <InfoCard title="Version" value="0.1.0" label="Early Access" />
+                                <InfoCard title="Language" value="JS / TS" label="Standard Syntax" />
+                                <InfoCard title="Environment" value="Sandboxed" label="Secure Execution" />
+                                <InfoCard title="Tick Rate" value="10 Hz" label="100ms / Turn" />
+                                <InfoCard title="Complexity" value="O(n)" label="Scalable Logic" />
                             </div>
                         </Section>
 
