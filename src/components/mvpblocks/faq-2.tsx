@@ -119,7 +119,7 @@ export default function Faq2() {
 
         {/* FAQ Grid */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <AnimatePresence mode='wait'>
+          <AnimatePresence>
             {filteredFaqs.map((faq, index) => (
               <motion.div
                 key={faq.id}
