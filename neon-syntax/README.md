@@ -1,82 +1,56 @@
-# 🎮 Neon Syntax
 
-**Neon Syntax** is a production-grade, browser-based programmable strategy game. Players write scripts in real-time to control units, manage resources, and outmaneuver opponents in a reactive, high-performance environment.
+# Neon Syntax - Cloud-Native Strategy Game
 
----
+This is a **deterministic, server-authoritative** strategy game engine built on a **Serverless-First** architecture.
+It uses a "Lazy Simulation" model where game state is computed on-demand via API calls, making it perfectly suited for **Vercel** and **GCP Cloud Run**.
 
-## 🚀 Tech Stack
+## Architecture
 
-The project is built with a modern, high-performance stack designed for low-latency game logic and premium UI interactions:
+- **Engine**: Pure functional simulation logic (`src/engine`).
+- **State**: Lazy evaluation (Time Delta + Actions = Next State).
+- **API**: Next.js App Router endpoints acting as the authoritative server.
+- **Frontend**: HTML5 Canvas visualization with polling-based sync.
 
-*   **Runtime & Package Manager**: [Bun](https://bun.sh/) — for lightning-fast installs and optimized script execution.
-*   **Framework**: [Next.js 16 (App Router)](https://nextjs.org/) — leveraging the latest React features and server-side optimizations.
-*   **Language**: [TypeScript](https://www.typescriptlang.org/) — providing end-to-end type safety for game engine logic and UI components.
-*   **Styling**: [Tailwind CSS 4](https://tailwindcss.com/) — modern, utility-first styling with high performance.
-*   **State Management**: [Zustand](https://zustand-demo.pmnd.rs/) — lightweight and performant state for both game engine and UI.
-*   **Animations**: [Framer Motion](https://www.framer.com/motion/) — for smooth transitions, micro-interactions, and game effects.
-*   **Code Editor**: [Monaco Editor](https://microsoft.github.io/monaco-editor/) (via `@monaco-editor/react`) — giving players a professional-grade IDE experience in-game.
+## Local Development
 
----
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-## 📂 Folder Structure
+2. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-The project follows a modular architecture that separates game engine logic from UI presentation:
+3. Open [http://localhost:3000/play](http://localhost:3000/play) to start a new game session.
 
-```text
-neon-syntax/
-├── src/
-│   ├── app/            # Next.js App Router (Routes & Layouts)
-│   ├── components/     # Reusable UI component library
-│   ├── config/         # Game constants and environment configuration
-│   ├── engine/         # 🧠 Core Game Logic
-│   │   ├── core/       # Game loop, state machine, and world logic
-│   │   ├── systems/    # Modular systems (Combat, Movement, Resources)
-│   │   └── validation/ # Intent & input validation
-│   ├── hooks/          # Custom React hooks
-│   ├── lib/            # Utility functions and library wrappers
-│   ├── store/          # Zustand store definitions (Global State)
-│   ├── styles/         # Global styles and Tailwind configuration
-│   ├── types/          # Centralized TypeScript definitions
-│   └── workers/        # 🛡️ Web Workers (Sandboxed User Script Execution)
-├── public/             # Static assets (Images, Models, Audio)
-├── package.json        # Dependencies and scripts
-└── tsconfig.json       # TypeScript configuration
+## Deployment on Vercel
+
+1. **Push to GitHub**:
+   Initialize a git repo and push this codebase.
+
+2. **Import to Vercel**:
+   - Go to Vercel Dashboard -> Add New Project.
+   - Select your repository.
+   - Framework Preset: **Next.js**.
+   - Click **Deploy**.
+
+3. **Persistence (Production)**:
+   The current version uses an **In-Memory Store** for simplicity. For persistent multiplayer games in production, swap `src/app/api/game/store.ts` to use:
+   - **Vercel KV (Redis)**
+   - **Firestore**
+   - **PostgreSQL**
+
+## Project Structure
+
 ```
-
----
-
-## 🛠️ Key Libraries
-
-| Library | Purpose |
-| :--- | :--- |
-| `zustand` | High-frequency game state synchronization. |
-| `framer-motion` | Dynamic UI feedback and game animations. |
-| `@monaco-editor/react` | The interface for player "Syntax" (coding). |
-| `clsx` & `tailwind-merge` | Efficient Tailwind class management. |
-
----
-
-## 🏃 Getting Started
-
-1.  **Install Dependencies**:
-    ```bash
-    bun install
-    ```
-
-2.  **Start Development Server**:
-    ```bash
-    bun dev
-    ```
-
-3.  **Build for Production**:
-    ```bash
-    bun run build
-    ```
-
----
-
-## 🧩 Architectural Principles
-
-*   **Headless Engine**: The game engine (`src/engine`) is decoupled from React, allowing for deterministic simulations.
-*   **Sandboxed Execution**: Player code runs in isolated Web Workers (`src/workers`) to ensure security and prevent main-thread blocking.
-*   **Reactive UI**: The UI reacts to state changes via Zustand stores, ensuring the interface stays in sync with the engine at all times.
+src/
+├── engine/           # Core Simulation Logic (Platform Agnostic)
+│   ├── types.ts      # Game Entities (Node, Edge, Player)
+│   ├── simulation.ts # Deterministic State Machine
+│   └── schema.ts     # Validation Logic
+├── app/
+    ├── api/game/     # Serverless Authoritative Endpoints
+    └── play/         # Client-Side Game Visualizer
+```
