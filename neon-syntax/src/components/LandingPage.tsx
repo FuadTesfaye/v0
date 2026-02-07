@@ -2,6 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { RobotPixelGrid } from './ui/pixel-grid';
+import { Navbar } from './Navbar';
 import { useRouter } from 'next/navigation';
 import Faq2 from '@/components/mvpblocks/faq-2';
 
@@ -24,6 +25,9 @@ export default function LandingPage() {
                     robotColor="#00ff99"
                 />
             </div>
+
+            {/* Navigation */}
+            <Navbar />
 
             {/* Hero Section */}
             <div className="relative z-10 flex flex-col items-center justify-center min-h-screen w-full pointer-events-none">
