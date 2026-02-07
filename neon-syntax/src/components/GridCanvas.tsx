@@ -8,8 +8,9 @@ export default function GridCanvas() {
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-    const { grid, activeUnitId } = useGameStore();
-    const { tiles, units, turn, width, height } = grid;
+
+    const { board, units, activeUnitId, turn } = useGameStore();
+    const { width, height, tiles } = board;
 
     // Handle resizing
     useEffect(() => {
@@ -84,30 +85,46 @@ export default function GridCanvas() {
                 const tx = x * tileSizePx;
                 const ty = y * tileSizePx;
 
-                if (!tile.revealed) {
-                    // Fog of war - Semi-transparent to show board texture but indicate hidden area
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-                    ctx.fillRect(tx, ty, tileSizePx, tileSizePx);
-                    continue;
-                }
+
+
 
                 // Tile Content
-                if (tile.type === 'DATA_NODE') {
-                    ctx.shadowColor = '#00ff88';
-                    ctx.shadowBlur = 15;
-                    ctx.fillStyle = 'rgba(0, 255, 136, 0.2)';
-                    ctx.fillRect(tx + 4, ty + 4, tileSizePx - 8, tileSizePx - 8);
-                    ctx.strokeStyle = '#00ff88';
-                    ctx.lineWidth = 2;
-                    ctx.strokeRect(tx + 8, ty + 8, tileSizePx - 16, tileSizePx - 16);
-                } else if (tile.type === 'ENERGY') {
-                    ctx.fillStyle = 'rgba(255, 255, 0, 0.1)';
+                if (tile.type === 'ENERGY_NODE') {
+                    // Pulse Effect
+                    const pulse = Math.sin(Date.now() / 200) * 5;
+                    ctx.shadowColor = '#fbbf24'; // Amber
+                    ctx.shadowBlur = 15 + pulse;
+                    ctx.fillStyle = 'rgba(251, 191, 36, 0.2)';
                     ctx.beginPath();
-                    ctx.arc(tx + tileSizePx / 2, ty + tileSizePx / 2, tileSizePx / 4, 0, Math.PI * 2);
+                    ctx.arc(tx + tileSizePx / 2, ty + tileSizePx / 2, tileSizePx / 3, 0, Math.PI * 2);
                     ctx.fill();
-                } else if (tile.type === 'TRAP') {
-                    ctx.fillStyle = 'rgba(255, 0, 0, 0.1)';
-                    ctx.fillRect(tx + tileSizePx / 4, ty + tileSizePx / 4, tileSizePx / 2, tileSizePx / 2);
+
+                    ctx.strokeStyle = '#fbbf24';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                } else if (tile.type === 'VIRUS_NODE') {
+                    // Glitch Effect
+                    ctx.fillStyle = 'rgba(168, 85, 247, 0.3)'; // Purple
+                    ctx.fillRect(tx + 2, ty + 2, tileSizePx - 4, tileSizePx - 4);
+
+                    ctx.strokeStyle = '#a855f7';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(tx, ty);
+                    ctx.lineTo(tx + tileSizePx, ty + tileSizePx);
+                    ctx.moveTo(tx + tileSizePx, ty);
+                    ctx.lineTo(tx, ty + tileSizePx);
+                    ctx.stroke();
+                } else if (tile.type === 'TRAP_NODE') {
+                    ctx.fillStyle = 'rgba(239, 68, 68, 0.3)'; // Red
+                    ctx.fillRect(tx + 4, ty + 4, tileSizePx - 8, tileSizePx - 8);
+                    ctx.strokeStyle = '#ef4444';
+                    ctx.strokeRect(tx + 6, ty + 6, tileSizePx - 12, tileSizePx - 12);
+                } else if (tile.type === 'WALL') {
+                    ctx.fillStyle = '#334155'; // Slate 700
+                    ctx.fillRect(tx, ty, tileSizePx, tileSizePx);
+                    ctx.strokeStyle = '#475569';
+                    ctx.strokeRect(tx, ty, tileSizePx, tileSizePx);
                 }
                 ctx.shadowBlur = 0;
             }
@@ -119,7 +136,7 @@ export default function GridCanvas() {
         // Restore context from translation
         ctx.restore();
 
-    }, [tiles, units, width, height, dimensions, activeUnitId]);
+    }, [tiles, width, height, dimensions]);
 
     useEffect(() => {
         let rafId: number;
@@ -131,40 +148,54 @@ export default function GridCanvas() {
         return () => cancelAnimationFrame(rafId);
     }, [draw]);
 
+
+    const handleCanvasClick = (e: React.MouseEvent) => {
+        if (!containerRef.current || useGameStore.getState().selectionMode === 'NONE') return;
+
+        const rect = containerRef.current.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+
+        const paddedWidth = dimensions.width - 20;
+        const paddedHeight = dimensions.height - 20;
+        const tileSizePx = Math.min(
+            paddedWidth / Math.max(width, 1),
+            paddedHeight / Math.max(height, 1)
+        );
+        const offsetX = (dimensions.width - (tileSizePx * width)) / 2;
+        const offsetY = (dimensions.height - (tileSizePx * height)) / 2;
+
+        const gridX = Math.floor((clickX - offsetX) / tileSizePx);
+        const gridY = Math.floor((clickY - offsetY) / tileSizePx);
+
+        if (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height) {
+            useGameStore.getState().placeVirusValues({ x: gridX, y: gridY });
+        }
+    };
+
     return (
         <motion.div
             ref={containerRef}
-            className="w-full h-full relative border-4 border-cyan-500/50 shadow-2xl rounded-xl overflow-hidden bg-black"
+            onClick={handleCanvasClick}
+            className={`w-full h-full relative border-4 border-cyan-500/50 shadow-2xl rounded-xl overflow-hidden bg-black ${useGameStore.getState().selectionMode === 'PLACE_VIRUS' ? 'cursor-crosshair ring-2 ring-purple-500' : ''}`}
             initial={{ scale: 0.95, opacity: 0 }}
-            animate={{
-                scale: 1,
-                opacity: 1,
-                boxShadow: [
-                    '0 0 20px rgba(6, 182, 212, 0.5)',
-                    '0 0 40px rgba(6, 182, 212, 0.3)',
-                    '0 0 20px rgba(6, 182, 212, 0.5)'
-                ]
-            }}
-            transition={{
-                duration: 0.8,
-                ease: 'easeOut',
-                boxShadow: { duration: 2, repeat: Infinity }
-            }}
+            animate={{ scale: 1, opacity: 1 }}
         >
             <div
                 className="absolute inset-0 pointer-events-none"
                 style={{
                     backgroundImage: "url('/assets/board.png')",
-                    backgroundSize: '100% 100%',
+                    backgroundSize: 'cover',
                     backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat'
+                    backgroundRepeat: 'no-repeat',
+                    opacity: 0.2
                 }}
             />
             <canvas
                 ref={canvasRef}
                 width={dimensions.width}
                 height={dimensions.height}
-                className="block"
+                className="block relative z-10"
             />
 
             {/* Units Overlay */}
@@ -181,24 +212,13 @@ export default function GridCanvas() {
                 const left = offsetX + unit.position.x * tileSizePx;
                 const top = offsetY + unit.position.y * tileSizePx;
 
-                // Only show if revealed or owned by player 
-                // But for now show all to verify logic unless strictly hidden
-                const isVisible = tiles[unit.position.x][unit.position.y].revealed || unit.owner === 'PLAYER';
-
-                if (!isVisible) return null;
-
                 return (
                     <motion.div
                         key={unit.id}
                         initial={{ opacity: 0, scale: 0 }}
-                        animate={{
-                            opacity: 1,
-                            scale: 1,
-                            left: left,
-                            top: top
-                        }}
+                        animate={{ opacity: 1, scale: 1, left, top }}
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        className="absolute w-10 h-10 pointer-events-none"
+                        className="absolute pointer-events-none"
                         style={{
                             width: tileSizePx,
                             height: tileSizePx
@@ -210,7 +230,6 @@ export default function GridCanvas() {
                                 <motion.div
                                     className="absolute inset-0 rounded-full border-2 border-white/50 shadow-[0_0_15px_rgba(255,255,255,0.5)]"
                                     layoutId="selection-ring"
-                                    transition={{ duration: 0.2 }}
                                 />
                             )}
                             <MiniBot
@@ -223,9 +242,8 @@ export default function GridCanvas() {
                 );
             })}
 
-            <div className="absolute top-4 right-4 pointer-events-none text-right font-mono text-cyan-500 text-xs">
+            <div className="absolute top-4 right-4 z-20 pointer-events-none text-right font-mono text-cyan-500 text-xs">
                 <div>Turn: {turn}</div>
-                <div>Energy: {units[0]?.energy || 0}/10</div>
             </div>
 
             <div className="absolute bottom-4 left-0 right-0 text-center pointer-events-none">

@@ -1,14 +1,58 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/Navbar";
 import { Github, Mail, Chrome } from "lucide-react";
+import { createClient } from "@/utils/supabase/client";
 
 export default function LoginPage() {
-    const handleSocialLogin = (provider: string) => {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
+    const supabase = createClient();
+
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+
+        try {
+            const { error: signInError } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+
+            if (signInError) {
+                setError(signInError.message);
+            } else {
+                router.push("/");
+                router.refresh();
+            }
+        } catch (err) {
+            setError("An unexpected error occurred.");
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSocialLogin = async (provider: 'github' | 'google') => {
+        setLoading(true);
+        // Implement social login logic here
+        // For example:
+        // await supabase.auth.signInWithOAuth({
+        //   provider: provider,
+        //   options: {
+        //     redirectTo: `${location.origin}/auth/callback`,
+        //   },
+        // })
         console.log(`Authenticating with ${provider}...`);
-        alert(`Integration for ${provider} coming soon!`);
+        alert(`Integration for ${provider} coming soon! Enable it in Supabase Dashboard.`);
+        setLoading(false);
     };
 
     return (
@@ -41,15 +85,17 @@ export default function LoginPage() {
                     {/* Social Auth */}
                     <div className="flex flex-col gap-3 mb-6">
                         <button
-                            onClick={() => handleSocialLogin("Google")}
-                            className="flex items-center justify-center gap-3 w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg transition-all text-sm font-medium group"
+                            onClick={() => handleSocialLogin("google")}
+                            disabled={loading}
+                            className="flex items-center justify-center gap-3 w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg transition-all text-sm font-medium group disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Chrome className="w-5 h-5 text-white/80 group-hover:text-white" />
                             Continue with Google
                         </button>
                         <button
-                            onClick={() => handleSocialLogin("GitHub")}
-                            className="flex items-center justify-center gap-3 w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg transition-all text-sm font-medium group"
+                            onClick={() => handleSocialLogin("github")}
+                            disabled={loading}
+                            className="flex items-center justify-center gap-3 w-full py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-lg transition-all text-sm font-medium group disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Github className="w-5 h-5 text-white/80 group-hover:text-white" />
                             Continue with GitHub
@@ -66,12 +112,20 @@ export default function LoginPage() {
                     </div>
 
                     {/* Email Form */}
-                    <form className="flex flex-col gap-4">
+                    <form onSubmit={handleLogin} className="flex flex-col gap-4">
+                        {error && (
+                            <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-xs">
+                                {error}
+                            </div>
+                        )}
                         <div>
                             <label className="block text-xs font-medium text-white/50 mb-1.5 uppercase tracking-wider">Email Address</label>
                             <input
                                 type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 placeholder="operative@algowars.io"
+                                required
                                 className="w-full px-4 py-2.5 bg-black/50 border border-white/10 rounded-lg focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 text-white placeholder-white/20 transition-all font-mono text-sm"
                             />
                         </div>
@@ -82,16 +136,20 @@ export default function LoginPage() {
                             </div>
                             <input
                                 type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 placeholder="••••••••"
+                                required
                                 className="w-full px-4 py-2.5 bg-black/50 border border-white/10 rounded-lg focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 text-white placeholder-white/20 transition-all font-mono text-sm"
                             />
                         </div>
 
                         <button
-                            type="button"
-                            className="w-full py-3 mt-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-lg shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all transform hover:-translate-y-0.5"
+                            type="submit"
+                            disabled={loading}
+                            className="w-full py-3 mt-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-lg shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_30px_rgba(6,182,212,0.5)] transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                         >
-                            Initialize Session
+                            {loading ? "Initializing Session..." : "Initialize Session"}
                         </button>
                     </form>
 
