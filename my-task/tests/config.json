@@ -1,0 +1,13 @@
+{
+  "base_commit": "b2896c7",
+  "fail_to_pass": [
+    "GravitySystem direction sync > should update semantic direction when rotating clockwise"
+  ],
+  "pass_to_pass": [
+    "GravitySystem direction sync > should flip direction correctly"
+  ],
+  "test_patch": "diff --git a/__tests__/silver/gravity.test.ts b/__tests__/silver/gravity.test.ts\nnew file mode 100644\nindex 0000000..8bf28bd\n--- /dev/null\n+++ b/__tests__/silver/gravity.test.ts\n@@ -0,0 +1,21 @@\n+import { GravitySystem } from \"../../src/engine/physics/GravitySystem\";\n+\n+describe(\"GravitySystem direction sync\", () => {\n+  let gravity: GravitySystem;\n+\n+  beforeEach(() => {\n+    gravity = new GravitySystem();\n+  });\n+\n+  test(\"should update semantic direction when rotating clockwise\", () => {\n+    gravity.rotate(true);\n+    expect(gravity.state.vector).toEqual({ x: -1, y: 0 });\n+    expect(gravity.state.direction).toBe('LEFT');\n+  });\n+\n+  test(\"should flip direction correctly\", () => {\n+    gravity.flip();\n+    expect(gravity.state.vector).toEqual({ x: 0, y: -1 });\n+    expect(gravity.state.direction).toBe('UP');\n+  });\n+});\n",
+  "selected_test_files_to_run": [
+    "__tests__/silver/gravity.test.ts"
+  ]
+}
