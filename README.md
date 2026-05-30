@@ -111,18 +111,6 @@ src/
 └── styles/              # Global styles
 ```
 
-## 🤝 Contributing
-
-Protocol 7 dictates that all improvements to the system must be peer-reviewed.
-1. Fork the repository.
-2. Create your feature branch (`git checkout -b feature/amazing-feature`).
-3. Commit your changes (`git commit -m 'Add some amazing feature'`).
-4. Push to the branch (`git push origin feature/amazing-feature`).
-5. Open a Pull Request.
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 *System Status: ONLINE*
